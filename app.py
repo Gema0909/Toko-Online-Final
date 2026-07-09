@@ -25,7 +25,7 @@ def login():
         user = service.login(request.form['username'], request.form['password'])
         if user:
             session['user'] = user
-            session['cart'] = []  # Menginisialisasi keranjang belanja kosong di session
+            session['cart'] = []  # Menginisialisasi keranjang belanjaan kosong di session
             return redirect(url_for('index'))
         flash('Username atau Password salah!', 'error')
     return render_template('login.html')
