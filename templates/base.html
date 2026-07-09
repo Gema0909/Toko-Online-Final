@@ -18,19 +18,19 @@
                     <span class="mr-4 text-gray-300">
                         Hi, {{ session['user']['username'] }}
                     </span>
-                    <a href="{{ url_for('main.shop') }}" class="mr-4 hover:text-blue-400"><i class="fas fa-store mr-1"></i> Produk</a>
-                    <a href="{{ url_for('main.view_cart') }}" class="mr-4 hover:text-green-400 relative">
+                    <a href="{{ url_for('shop') }}" class="mr-4 hover:text-blue-400"><i class="fas fa-store mr-1"></i> Produk</a>
+                    <a href="{{ url_for('view_cart') }}" class="mr-4 hover:text-green-400 relative">
                         <i class="fas fa-shopping-cart mr-1"></i> Keranjang
                         {% if cart_count and cart_count > 0 %}
                         <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">{{ cart_count }}</span>
                         {% endif %}
                     </a>
-                    <a href="{{ url_for('main.view_orders') }}" class="mr-4 hover:text-purple-400"><i class="fas fa-receipt mr-1"></i> Pesanan Saya</a>
+                    <a href="{{ url_for('view_orders') }}" class="mr-4 hover:text-purple-400"><i class="fas fa-receipt mr-1"></i> Pesanan Saya</a>
                     {% else %}
                     <span class="mr-4 text-red-400 font-bold"><i class="fas fa-user-shield mr-1"></i> PANEL ADMIN</span>
-                    <a href="{{ url_for('main.admin_dashboard') }}" class="mr-4 hover:text-gray-400"></a><i class="fas fa-tachometer-alt mr-1"></i> Dashboard</a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="mr-4 hover:text-gray-400"><i class="fas fa-tachometer-alt mr-1"></i> Dashboard</a>
                     {% endif %}
-                    <a href="{{ url_for('main.logout') }}" class="text-red-400 ml-2 hover:text-red-300"></a><i class="fas fa-sign-out-alt"></i></a>
+                    <a href="{{ url_for('logout') }}" class="text-red-400 ml-2 hover:text-red-300"><i class="fas fa-sign-out-alt"></i></a>
                 {% endif %}
             </div>
         </div>
