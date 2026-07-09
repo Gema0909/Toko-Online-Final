@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask
 import os
-from routes import bp as main_blueprint  # Mengimpor blueprint dari routes.py
+from router.routes import bp as main_blueprint  # Mengimpor blueprint dari routes.py
 
 app = Flask(__name__)
 app.secret_key = 'kunci_rahasia_toko_online_super_aman'
