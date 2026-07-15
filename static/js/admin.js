@@ -248,31 +248,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAdminStats();
     loadAdminOrders();
     loadAdminProducts();
-
-    const addProductForm = document.getElementById('add-product-form');
-    if (addProductForm) {
-        addProductForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            fetch('/api/products', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    this.reset();
-                    loadAdminProducts();
-                } else {
-                    alert("Gagal memajang produk: " + data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Terjadi kesalahan sistem saat menambah produk.");
-            });
-        });
-    }
 });
