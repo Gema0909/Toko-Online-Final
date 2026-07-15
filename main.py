@@ -75,10 +75,16 @@ def api_products():
 @app.route('/api/login', methods=['POST'])
 def api_login():
     try:
-        data = request.json
-        username = data.get('username')
-        password = data.get('password')
+        # 1. Ambil data secara aman dari Form Data (dari JavaScript/HTML)
+        username = request.form.get('username')
+        password = request.form.get('password')
         
+        # 2. Fallback (cadangan) jika suatu saat Anda mengirim JSON murni
+        if not username and request.is_json:
+            username = request.json.get('username')
+            password = request.json.get('password')
+            
+        # 3. Validasi jika kosong
         if not username or not password:
             return jsonify({"success": False, "message": "Username & Password wajib diisi!"}), 400
             
@@ -108,7 +114,6 @@ def api_login():
     except Exception as e:
         print("Error sistem login:", e)
         return jsonify({"success": False, "message": f"Terjadi kesalahan sistem: {str(e)}"}), 500
-
 
 # Jalankan Server Utama
 if __name__ == '__main__':
