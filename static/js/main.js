@@ -165,22 +165,26 @@ function loadMyOrders() {
 // =========================================================================
 document.addEventListener("DOMContentLoaded", function() {
     
-    // 1. JALANKAN INI DI URUTAN PERTAMA (Biar tidak terhalang error fungsi bawahnya)
+    // 1. PINDAHKAN KE URUTAN PERTAMA
     aturNavigasiOtomatis();
 
-    // A. Jalankan penarikan produk untuk halaman toko
-    if (typeof loadShopProducts === 'function') {
-        try { loadShopProducts(); } catch (e) { console.log("Bukan halaman toko, skip."); }
+    // 2. BUNGKUS DENGAN TRY-CATCH AGAR KALAU BUKAN HALAMANNYA, SCRIPT TIDAK MACET
+    try { 
+        loadShopProducts(); 
+    } catch (e) { 
+        console.log("Bukan halaman toko, skip."); 
     }
 
-    // A2. Jalankan penarikan pesanan riil untuk halaman Pesanan Saya
-    if (typeof loadMyOrders === 'function') {
-        try { loadMyOrders(); } catch (e) { console.log("Bukan halaman pesanan, skip."); }
+    try { 
+        loadMyOrders(); 
+    } catch (e) { 
+        console.log("Bukan halaman pesanan, skip."); 
     }
 
-    // Jalankan update badge keranjang otomatis
-    if (typeof updateCartBadge === 'function') {
-        try { updateCartBadge(); } catch (e) { console.log("Badge keranjang skip."); }
+    try { 
+        updateCartBadge(); 
+    } catch (e) { 
+        console.log("Badge keranjang skip."); 
     }
 
     // B. Menghilangkan Notifikasi/Alert otomatis setelah 5 detik
