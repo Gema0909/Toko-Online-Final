@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Logika untuk menampilkan/menyembunyikan password
+    
+    // 1. Logika untuk menampilkan/menyembunyikan password (DENGAN PENGAMAN)
     const btnToggle = document.getElementById('btnTogglePassword');
     const passwordInput = document.getElementById('password');
     const eyeIcon = document.getElementById('eyeIcon');
 
-    if(btnToggle) {
+    // Pengaman: Event listener hanya dipasang jika KETIGA elemen ini benar-benar ada di halaman
+    if (btnToggle && passwordInput && eyeIcon) {
         btnToggle.addEventListener('click', function() {
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
@@ -16,9 +18,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Logika Login menggunakan API Fetch (Tanpa Jinja)
+    // 2. Logika Login menggunakan API Fetch (Tanpa Jinja - DENGAN PENGAMAN REDIRECT)
     const loginForm = document.getElementById('loginForm');
-    if(loginForm) {
+    if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault(); 
             const formData = new FormData(loginForm);
@@ -27,24 +29,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Gagal menghubungi server");
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    alert(data.message); // Menampilkan "Login sukses!"
+                    alert(data.message || "Login sukses!");
                     
-                    // --- TAMBAHKAN PERINTAH REDIRECT INI ---
-                    if (data.user.role === 'admin') {
-                        window.location.href = '/admin'; // Jika admin, arahkan ke dashboard admin
+                    // Pengaman: Memastikan objek 'data.user' tidak null sebelum membaca role
+                    const userRole = (data.user && data.user.role) ? data.user.role : 'user';
+
+                    // Pengalihan halaman (Redirect) berdasarkan peran/role
+                    if (userRole === 'admin') {
+                        window.location.href = '/admin'; // Dashboard Admin
                     } else {
-                        window.location.href = '/'; // Jika pelanggan biasa, arahkan ke halaman utama (shop)
+                        window.location.href = '/'; // Halaman Utama Shop Pelanggan
                     }
-                    // ---------------------------------------
                     
                 } else {
-                    alert(data.message); // Menampilkan pesan error jika gagal
+                    // Menampilkan pesan error dari backend jika validasi gagal
+                    alert(data.message || "Username atau password salah!");
                 }
             })
-            .catch(err => console.error("Error:", err));
+            .catch(err => {
+                console.error("Error saat login:", err);
+                alert("Terjadi kesalahan sistem. Silakan coba beberapa saat lagi.");
+            });
         });
     }
 });
