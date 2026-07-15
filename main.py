@@ -119,6 +119,47 @@ def api_login():
     except Exception as e:
         print("Error sistem login:", e)
         return jsonify({"success": False, "message": f"Terjadi kesalahan sistem: {str(e)}"}), 500
+    
+# ==========================================
+#          ROUTE KERANJANG (API)
+# ==========================================
+@app.route('/api/cart', methods=['POST'])
+def add_to_cart():
+    try:
+        # 1. Pastikan user sudah login
+        if 'user' not in session:
+            return jsonify({"success": False, "message": "Silakan login terlebih dahulu untuk berbelanja!"}), 401
+
+        # 2. Ambil data yang dikirim dari tombol
+        product_id = request.form.get('id') or (request.json.get('id') if request.is_json else None)
+        product_name = request.form.get('name') or (request.json.get('name') if request.is_json else None)
+        product_price = request.form.get('price') or (request.json.get('price') if request.is_json else None)
+
+        if not product_name:
+            return jsonify({"success": False, "message": "Data produk tidak valid!"}), 400
+
+        # 3. Siapkan keranjang di dalam sesi jika belum ada
+        if 'cart' not in session:
+            session['cart'] = []
+
+        # 4. Tambahkan barang ke keranjang
+        cart = session['cart']
+        cart.append({
+            "id": product_id,
+            "name": product_name,
+            "price": product_price,
+            "qty": 1
+        })
+        
+        # 5. Simpan perubahan keranjang
+        session['cart'] = cart
+        session.modified = True 
+
+        return jsonify({"success": True, "message": f"{product_name} berhasil masuk keranjang!"})
+
+    except Exception as e:
+        print("Error tambah keranjang:", e)
+        return jsonify({"success": False, "message": "Gagal memasukkan ke keranjang."}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':
