@@ -1,14 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm'); // Pastikan <form id="loginForm"> di login.html kamu
+    const loginForm = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const btnTogglePassword = document.getElementById('btnTogglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
 
+    // 1. Fitur Buka/Tutup Mata Password
+    if (btnTogglePassword && passwordInput && eyeIcon) {
+        btnTogglePassword.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // 2. Fitur Proses Kirim Data Login ke Database
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Mencegah halaman refresh otomatis
+            e.preventDefault(); 
             
-            // Mengambil input dari form login.html
-            // (Pastikan ID input username & password di HTML kamu adalah 'username' dan 'password')
             const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
+            const passwordValue = passwordInput.value;
             
             try {
                 const response = await fetch('/api/login', {
@@ -18,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({
                         username: usernameInput,
-                        password: passwordInput
+                        password: passwordValue
                     })
                 });
                 
@@ -26,12 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (data.success) {
                     alert('Selamat! Login Berhasil.');
-                    // Simpan data login sementara di browser
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('username', data.user.username);
                     
-                    // Alihkan halaman ke dashboard Admin atau Shop setelah sukses login
-                    window.location.href = '/admin'; 
+                    // Arahkan ke halaman utama setelah sukses login
+                    window.location.href = '/'; 
                 } else {
                     alert(data.message || 'Login Gagal!');
                 }
