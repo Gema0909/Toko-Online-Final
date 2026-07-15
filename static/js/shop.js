@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
-            // Merender HTML menggunakan JavaScript murni (Tanpa Jinja)
+            // Merender HTML menggunakan JavaScript murni
             products.forEach(item => {
                 
-                // 1. LOGIKA GAMBAR (DIAMBIL DARI main.js AGAR GAMBAR MUNCUL)
+                // 1. Logika Gambar
                 let imageSrc = 'https://placehold.co/400x300/e0e0e0/666666?text=No+Image';
                 if (item.image) {
                     if (item.image.startsWith('http') || item.image.startsWith('/')) {
@@ -26,10 +26,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
 
-                // 2. LOGIKA DESKRIPSI
+                // 2. Logika Deskripsi
                 const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
 
-                // 3. HTML DIKEMBALIKAN KE STRUKTUR ASLI (Tanpa div product-info)
+                // 3. Template Kartu HTML
                 const productCard = `
                     <div class="product-card">
                         <img 
@@ -54,6 +54,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 tempatProduk.innerHTML += productCard;
             });
         })
+        .catch(err => {
+            // Jika ada error jaringan/database, tampilkan pesan ini
+            tempatProduk.innerHTML = '<p style="text-align:center; color:#f87171;">Gagal memuat produk. Periksa koneksi ke database.</p>';
+            console.error("Error fetching products:", err);
+        });
+});
 
 // Fungsi untuk menambah ke keranjang via API
 function addToCart(productId) {
@@ -69,10 +75,15 @@ function addToCart(productId) {
         if(data.status === 'success') {
             alert(data.message);
             // Update angka keranjang secara langsung
-            document.querySelector('.cart-badge').innerText = data.cart_count;
+            const badge = document.querySelector('.cart-badge');
+            if (badge) badge.innerText = data.cart_count;
         } else {
             alert("Terjadi kesalahan. Silakan login kembali.");
             window.location.href = '/login';
         }
+    })
+    .catch(err => {
+        console.error("Error adding to cart:", err);
+        alert("Gagal menambahkan ke keranjang.");
     });
 }
