@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
 
                 // 3. Template Kartu HTML (Sudah Dirapikan)
+                // 3. Template Kartu HTML (Sudah Dirapikan)
                 const productCard = `
                     <div class="product-card" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                         
@@ -44,7 +45,11 @@ document.addEventListener("DOMContentLoaded", function() {
                             <p class="category-tag" style="margin: 0 0 10px 0; font-size: 0.85rem; color: #60a5fa;">
                                 <i class="fas fa-tag"></i> ${item.category}
                             </p>
-                            <p class="product-desc" style="margin: 0 0 15px 0;">${descText}</p>
+                            
+                            <p class="product-desc" style="margin: 0 0 15px 0;">
+                                <strong style="color: #d1d5db;">Deskripsi:</strong> <br>
+                                ${descText}
+                            </p>
                         </div>
                         
                         <div style="margin-top: auto;">
