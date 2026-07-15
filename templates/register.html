@@ -1,84 +1,81 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex items-center justify-center min-h-[80vh]">
-    <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden relative">
-        
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-teal-500 to-blue-500"></div>
-
-        <div class="bg-gray-900/50 p-6 text-center border-b border-gray-700">
-            <div class="inline-block p-3 rounded-full bg-gray-800 border border-gray-600 mb-3 shadow-inner">
-                <i class="fas fa-user-plus text-4xl text-green-500"></i>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gema Store - Register</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="fas fa-shopping-bag"></i> Toko Online
             </div>
-            <h2 class="text-2xl font-bold text-white">Buat Akun Baru</h2>
-            <p class="text-sm text-gray-400 mt-1">Daftar sekarang untuk kemudahan transaksi pengiriman barang belanjaan Anda.</p>
+            <div class="nav-links">
+                <a href="shop.html" class="nav-link"><i class="fas fa-store"></i> Produk</a>
+                <a href="login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Masuk</a>
+            </div>
         </div>
+    </nav>
 
-        <div class="p-8">
-            <form method="POST" action="{{ url_for('register') }}" class="space-y-6">
+    <main class="main-container">
+        <div class="login-wrapper">
+            <div class="login-card">
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Username Baru</label>
-                    <div class="relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-user-tag text-gray-500"></i>
-                        </div>
-                        <input type="text" name="username" required 
-                            class="w-full bg-gray-900 text-white pl-10 pr-4 py-3 rounded-lg border border-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition placeholder-gray-600" 
-                            placeholder="Pilih username unik Anda">
+                <div class="card-gradient-line card-gradient-green"></div>
+
+                <div class="card-header">
+                    <div class="icon-circle icon-green">
+                        <i class="fas fa-user-plus"></i>
                     </div>
+                    <h2>Buat Akun Baru</h2>
+                    <p>Daftar sekarang untuk kemudahan transaksi pengiriman barang belanjaan Anda.</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Password</label>
-                    <div class="relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-key text-gray-500"></i>
-                        </div>
-                        <input type="password" name="password" id="passwordInput" required 
-                            class="w-full bg-gray-900 text-white pl-10 pr-12 py-3 rounded-lg border border-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition placeholder-gray-600" 
-                            placeholder="Buat kata sandi aman">
+                <div class="card-body">
+                    <form id="registerForm">
                         
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePassword()">
-                            <i class="fas fa-eye text-gray-500 hover:text-green-400 transition" id="eyeIcon" title="Lihat Password"></i>
+                        <div class="form-group">
+                            <label>Username Baru</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user-tag input-icon"></i>
+                                <input type="text" name="username" placeholder="Pilih username unik Anda" required>
+                            </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-key input-icon"></i>
+                                <input type="password" name="password" id="passwordInput" placeholder="Buat kata sandi aman" required>
+                                <button type="button" class="toggle-btn" onclick="togglePassword()" title="Lihat Password">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            <p class="form-hint">*Disarankan menggunakan minimal 3 karakter.</p>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-green">
+                            Daftar Sekarang <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+
+                    <div class="card-footer">
+                        <p>Sudah terdaftar sebagai member? <br>
+                            <a href="login.html" class="link-register link-green">Masuk di Sini</a>
+                        </p>
                     </div>
-                    <p class="text-[11px] text-gray-500 mt-2 italic">*Disarankan menggunakan minimal 3 karakter.</p>
                 </div>
-
-                <button type="submit" 
-                    class="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 text-white font-bold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 active:translate-y-0 duration-200 uppercase tracking-wide">
-                    Daftar Sekarang <i class="fas fa-paper-plane ml-2"></i>
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-400">
-                    Sudah terdaftar sebagai member? 
-                    <a href="{{ url_for('login') }}" class="text-green-400 hover:text-green-300 font-bold hover:underline transition">
-                        Masuk di Sini
-                    </a>
-                </p>
             </div>
         </div>
-    </div>
-</div>
+    </main>
+    
+    <footer class="footer">
+        &copy; 2026 Toko Online E-Commerce System. All Rights Reserved.
+    </footer>
 
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('passwordInput');
-        const eyeIcon = document.getElementById('eyeIcon');
-        
-        // Cek tipe input, jika password ubah ke text, jika text ubah ke password
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash'); // Mengubah ikon jadi mata dicoret
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye'); // Mengembalikan ikon mata normal
-        }
-    }
-</script>
-{% endblock %}
+    <script src="static/js/main.js"></script>
+</body>
+</html>

@@ -1,342 +1,185 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="mb-8">
-    <h2 class="text-3xl font-bold text-white">Dashboard Admin</h2>
-    <p class="text-gray-400 text-sm">Panel kendali stok produk dan pengolahan status pesanan toko online.</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-gray-800 px-6 py-4 rounded-xl border border-gray-700 shadow-lg">
-        <span class="text-gray-400 text-xs font-bold uppercase tracking-wider block mb-1">Total Pendapatan Bersih</span>
-        <div class="text-3xl font-bold text-green-400">
-            Rp {{ "{:,.0f}".format(total_sales).replace(',', '.') }}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gema Store - Dashboard Admin</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/admin.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="fas fa-shopping-bag"></i> Toko Online
+            </div>
+            <div class="nav-links">
+                <span class="text-red font-bold"><i class="fas fa-user-shield"></i> PANEL ADMIN</span>
+                <a href="admin.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="login.html" class="nav-link text-red ml-2"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
         </div>
-    </div>
-    <div class="bg-gray-800 px-6 py-4 rounded-xl border border-gray-700 shadow-lg">
-        <span class="text-gray-400 text-xs font-bold uppercase tracking-wider block mb-1">Total Pesanan Masuk</span>
-        <div class="text-3xl font-bold text-blue-400">
-            {{ orders|length }} Transaksi
+    </nav>
+
+    <main class="main-container max-w-full">
+        <div class="admin-header">
+            <h2>Dashboard Admin</h2>
+            <p>Panel kendali stok produk dan pengolahan status pesanan toko online.</p>
         </div>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div class="lg:col-span-2 space-y-6">
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md">
-            <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-boxes mr-2 text-purple-400"></i>Daftar Antrean Pesanan</h3>
-            <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                {% for order in orders %}
-                <div class="p-4 bg-gray-900 rounded-lg border border-gray-700 text-sm">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <p class="font-bold text-blue-400">Pesanan #{{ order.id }} (User ID: {{ order.user_id }})</p>
-                            <p class="text-xs text-gray-500">{{ order.date }}</p>
-                        </div>
-                        <form action="{{ url_for('update_order_route', order_id=order.id) }}" method="POST" class="flex gap-2">
-                            <select name="status" class="bg-gray-800 text-white border border-gray-600 rounded px-2 py-1 text-xs outline-none">
-                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
-                                <option value="Diproses" {% if order.status == 'Diproses' %}selected{% endif %}>Diproses</option>
-                                <option value="Dikirim" {% if order.status == 'Dikirim' %}selected{% endif %}>Dikirim</option>
-                                <option value="Selesai" {% if order.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-                                <option value="Dibatalkan" {% if order.status == 'Dibatalkan' %}selected{% endif %}>Dibatalkan</option>
-                            </select>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded">Update</button>
-                        </form>
-                    </div>
-                    
-                    <div class="text-xs text-gray-400 mb-2">
-                        {% for item in order['items'] %}
-                            {{ item.name }} ({{ item.quantity }}x), 
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="text-xs text-gray-500 italic bg-gray-850 p-2 rounded space-y-2">
-
-                    <div>
-                        <b>Alamat Pengiriman:</b><br>
-                        {{ order.address }}
-                    </div>
-
-                    <div>
-                        <b>Metode Pembayaran:</b>
-                        {{ order.payment_method }}
-                    </div>
-
-                    <div>
-                        <b>Status Pembayaran:</b>
-
-                        {% if order.payment_status == "Lunas" %}
-
-                            <span class="text-green-400 font-bold">
-                                {{ order.payment_status }}
-                            </span>
-
-                        {% elif order.payment_status == "Menunggu Verifikasi" %}
-
-                            <span class="text-yellow-400 font-bold">
-                                {{ order.payment_status }}
-                            </span>
-
-                        {% elif order.payment_status == "Ditolak" %}
-
-                            <span class="text-red-400 font-bold">
-                                {{ order.payment_status }}
-                            </span>
-
-                        {% else %}
-
-                            <span class="text-blue-400 font-bold">
-                                {{ order.payment_status }}
-                            </span>
-
-                        {% endif %}
-                    </div>
-
-                    {% if order.payment_proof %}
-
-                    <div>
-
-                        <a
-                            href="{{ url_for('static', filename='payments/' + order.payment_proof) }}"
-                            target="_blank"
-                            class="text-cyan-400 hover:text-cyan-300">
-
-                            <i class="fas fa-image mr-1"></i>
-
-                            Lihat Bukti Pembayaran
-
-                        </a>
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-                    <p class="text-right font-bold text-green-400 mt-2">Total: Rp {{ "{:,.0f}".format(order.total_amount).replace(',', '.') }}</p>
-                </div>
-                {% if order.payment_status == "Menunggu Verifikasi" %}
-
-                <div class="flex gap-2 mt-4">
-
-                    <form
-                        action="{{ url_for('verify_payment_route', order_id=order.id) }}"
-                        method="POST">
-
-                        <button
-                            class="bg-green-600 hover:bg-green-500 px-3 py-2 rounded text-white text-xs font-bold">
-
-                            <i class="fas fa-check"></i>
-
-                            Verifikasi
-
-                        </button>
-
-                    </form>
-
-                    <form
-                        action="{{ url_for('reject_payment_route', order_id=order.id) }}"
-                        method="POST">
-
-                        <button
-                            class="bg-red-600 hover:bg-red-500 px-3 py-2 rounded text-white text-xs font-bold">
-
-                            <i class="fas fa-times"></i>
-
-                            Tolak
-
-                        </button>
-
-                    </form>
-
-                </div>
-
-                {% endif %}
-                {% else %}
-                <p class="text-gray-500 text-center py-6 text-xs">Belum ada pesanan dari pelanggan.</p>
-                {% endfor %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-title">Total Pendapatan Bersih</span>
+                <div class="stat-value text-green">Rp 15.500.000</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">Total Pesanan Masuk</span>
+                <div class="stat-value text-blue">24 Transaksi</div>
             </div>
         </div>
 
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md">
-            <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-list mr-2 text-blue-400"></i>Katalog Produk Aktif</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead>
-                        <tr class="border-b border-gray-700 text-gray-400 font-bold uppercase">
-                            <th class="pb-2">Nama</th>
-                            <th class="pb-2">Kategori</th>
-                            <th class="pb-2 text-right">Harga (Rp)</th>
-                            <th class="pb-2 text-center">Stok</th>
-                            <th class="pb-2 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-700">
-                        {% for item in items %}
-                        <tr>
-                            <td class="py-3 font-semibold text-white">{{ item.name }}</td>
-                            <td class="py-3">{{ item.category }}</td>
-                            <td class="py-3 text-right text-green-400 font-bold">{{ "{:,.0f}".format(item.price).replace(',', '.') }}</td>
-                            <td class="py-3 text-center">{{ item.stock }}</td>
-                            <td class="py-3 text-center flex justify-center gap-3">
-                                <a href="javascript:void(0)" 
-                                   class="text-blue-500 hover:text-blue-400" 
-                                   title="Edit Produk"
-                                   onclick="openEditModal(this)"
-                                   data-name="{{ item.name }}"
-                                   data-category="{{ item.category }}"
-                                   data-price="{{ item.price }}"
-                                   data-stock="{{ item.stock }}"
-                                   data-description="{{ item.description | default('') }}"
-                                   data-action="{{ url_for('edit_product_route', product_id=item.id) }}">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ url_for('delete_product_route', product_id=item.id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')">
-                                    <button type="submit" class="text-red-500 hover:text-red-400" title="Hapus Produk"><i class="fas fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md h-fit">
-        <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-plus-circle mr-2 text-green-400"></i>Tambah Produk</h3>
-        <form action="{{ url_for('app_add_product_route' if 'app_add_product_route' in codes else 'add_product_route') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-sm">
-            <div>
-                <label class="block text-gray-400 mb-1">Nama Barang</label>
-                <input type="text" name="name" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-green-500">
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Kategori</label>
-                <input type="text" name="category" required placeholder="Contoh: Pakaian, Elektronik" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-green-500">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-400 mb-1">Harga (Rp)</label>
-                    <input type="number" name="price" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-green-500">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">Stok Awal</label>
-                    <input type="number" name="stock" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-green-500">
-                </div>
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Deskripsi Produk</label>
-                <textarea name="description" rows="4" placeholder="Detail spesifikasi barang fisik..." class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-green-500"></textarea>
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Gambar Produk</label>
-                <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white">
-            </div>
-            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 rounded-lg shadow-md transition">
-                Pajang Produk Baru
-            </button>
-        </form>
-    </div>
-</div>
-
-<div id="editModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-60 flex items-center justify-center p-4">
-    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl w-full max-w-lg">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-white"><i class="fas fa-edit mr-2 text-blue-400"></i>Edit Produk</h3>
-            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-white">
-                <i class="fas fa-times text-lg"></i>
-            </button>
-        </div>
-        <form id="editForm" method="POST" enctype="multipart/form-data" class="space-y-4 text-sm">
-            <div>
-                <label class="block text-gray-400 mb-1">Nama Barang</label>
-                <input type="text" id="edit_name" name="name" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-blue-500">
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Kategori</label>
-                <input type="text" id="edit_category" name="category" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-blue-500">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-400 mb-1">Harga (Rp)</label>
-                    <input type="number" id="edit_price" name="price" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">Stok</label>
-                    <input type="number" id="edit_stock" name="stock" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-blue-500">
-                </div>
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Deskripsi Produk</label>
-                <textarea id="edit_description" name="description" rows="4" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-blue-500"></textarea>
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-1">Ganti Gambar (Opsional)</label>
-                <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white">
-            </div>
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="closeEditModal()" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition">
-                    Batal
-                </button>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg shadow-md transition">
-                    Simpan Perubahan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    // Fungsi untuk Modal Edit
-    function openEditModal(element) {
-        const actionUrl = element.getAttribute('data-action');
-        const name = element.getAttribute('data-name');
-        const category = element.getAttribute('data-category');
-        const price = element.getAttribute('data-price');
-        const stock = element.getAttribute('data-stock');
-        const description = element.getAttribute('data-description');
-
-        document.getElementById('editForm').action = actionUrl;
-        document.getElementById('edit_name').value = name;
-        document.getElementById('edit_category').value = category;
-        document.getElementById('edit_price').value = price;
-        document.getElementById('edit_stock').value = stock;
-        document.getElementById('edit_description').value = description;
-
-        document.getElementById('editModal').classList.remove('hidden');
-    }
-
-    function closeEditModal() {
-        document.getElementById('editModal').classList.add('hidden');
-    }
-
-    // Fungsi untuk menghilangkan Notifikasi/Alert otomatis setelah 5 detik
-    document.addEventListener("DOMContentLoaded", function() {
-        // Mendapatkan semua elemen notifikasi. Pastikan div notifikasi di base.html 
-        // Anda memiliki class 'alert', 'flash', atau role='alert'
-        const alerts = document.querySelectorAll('.alert, .flash, [role="alert"]');
-        
-        alerts.forEach(function(alert) {
-            setTimeout(function() {
-                // Memberikan efek fade out transisi
-                alert.style.transition = "opacity 0.5s ease-out";
-                alert.style.opacity = "0";
+        <div class="dashboard-grid">
+            <div class="col-left">
                 
-                // Menghapus elemen sepenuhnya setelah animasi selesai
-                setTimeout(function() {
-                    alert.style.display = "none";
-                    alert.remove();
-                }, 500);
-            }, 5000); // 5000 ms = 5 detik
-        });
-    });
-</script>
-{% endblock %}
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-boxes text-purple"></i> Daftar Antrean Pesanan</h3>
+                    <div class="order-list">
+                        <div class="order-item">
+                            <div class="order-header">
+                                <div>
+                                    <p class="order-id">Pesanan #102 (User ID: 5)</p>
+                                    <p class="order-date">15 Juli 2026 10:30</p>
+                                </div>
+                                <form class="status-form">
+                                    <select class="status-select">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Diproses" selected>Diproses</option>
+                                        <option value="Dikirim">Dikirim</option>
+                                        <option value="Selesai">Selesai</option>
+                                    </select>
+                                    <button type="button" class="btn-sm btn-blue">Update</button>
+                                </form>
+                            </div>
+                            
+                            <div class="order-products">
+                                Kaos Polos Hitam (2x), Topi Baseball (1x)
+                            </div>
+                            
+                            <div class="order-details">
+                                <p><b>Alamat:</b> Jl. Merdeka No.45, Jakarta</p>
+                                <p><b>Metode Pembayaran:</b> Transfer BCA</p>
+                                <p><b>Status Pembayaran:</b> <span class="text-green font-bold">Lunas</span></p>
+                                <a href="#" class="link-proof"><i class="fas fa-image"></i> Lihat Bukti Pembayaran</a>
+                            </div>
+                            <p class="order-total">Total: Rp 350.000</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <h3 class="card-title"><i class="fas fa-list text-blue"></i> Katalog Produk Aktif</h3>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Kategori</th>
+                                    <th class="text-right">Harga (Rp)</th>
+                                    <th class="text-center">Stok</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold">Kaos Polos Hitam</td>
+                                    <td>Pakaian</td>
+                                    <td class="text-right text-green font-bold">100.000</td>
+                                    <td class="text-center">45</td>
+                                    <td class="text-center action-btns">
+                                        <button class="btn-icon text-blue" onclick="openEditModal('Kaos Polos Hitam', 'Pakaian', '100000', '45', 'Bahan katun 30s')"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon text-red"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-right">
+                <div class="card form-card">
+                    <h3 class="card-title"><i class="fas fa-plus-circle text-green"></i> Tambah Produk</h3>
+                    <form class="admin-form">
+                        <div class="form-group">
+                            <label>Nama Barang</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <input type="text" placeholder="Contoh: Pakaian" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group w-50">
+                                <label>Harga (Rp)</label>
+                                <input type="number" required>
+                            </div>
+                            <div class="form-group w-50">
+                                <label>Stok Awal</label>
+                                <input type="number" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi Produk</label>
+                            <textarea rows="4" placeholder="Detail spesifikasi..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Gambar Produk</label>
+                            <input type="file" accept="image/*">
+                        </div>
+                        <button type="button" class="btn-primary mt-2">Pajang Produk Baru</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="editModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit text-blue"></i> Edit Produk</h3>
+                <button type="button" class="close-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form class="admin-form mt-3">
+                <div class="form-group">
+                    <label>Nama Barang</label>
+                    <input type="text" id="edit_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <input type="text" id="edit_category" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group w-50">
+                        <label>Harga (Rp)</label>
+                        <input type="number" id="edit_price" required>
+                    </div>
+                    <div class="form-group w-50">
+                        <label>Stok</label>
+                        <input type="number" id="edit_stock" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi Produk</label>
+                    <textarea id="edit_description" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Batal</button>
+                    <button type="button" class="btn-primary" onclick="closeEditModal()">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/js/admin.js"></script>
+</body>
+</html>

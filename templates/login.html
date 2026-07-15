@@ -1,83 +1,74 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex items-center justify-center min-h-[80vh]">
-    <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden relative">
-        
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
-
-        <div class="bg-gray-900/50 p-6 text-center border-b border-gray-700">
-            <div class="inline-block p-3 rounded-full bg-gray-800 border border-gray-600 mb-3 shadow-inner">
-                <i class="fas fa-user-circle text-4xl text-blue-500"></i>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gema Store - Login</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="fas fa-shopping-bag"></i> Toko Online
             </div>
-            <h2 class="text-2xl font-bold text-white">Selamat Datang!</h2>
-            <p class="text-sm text-gray-400 mt-1">Silakan masuk untuk mulai berbelanja dan mengelola keranjang.</p>
+            <div class="nav-links">
+                <a href="shop.html" class="nav-link"><i class="fas fa-store"></i> Produk</a>
+                <a href="register.html" class="nav-link text-green"><i class="fas fa-user-plus"></i> Daftar</a>
+            </div>
         </div>
+    </nav>
 
-        <div class="p-8">
-            <form method="POST" action="{{ url_for('login') }}" class="space-y-6">
+    <main class="main-container">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <div class="card-gradient-line"></div>
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Username</label>
-                    <div class="relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-user text-gray-500"></i>
-                        </div>
-                        <input type="text" name="username" required 
-                            class="w-full bg-gray-900 text-white pl-10 pr-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition placeholder-gray-600" 
-                            placeholder="Masukkan username Anda">
+                <div class="card-header">
+                    <div class="icon-circle">
+                        <i class="fas fa-user-circle"></i>
                     </div>
+                    <h2>Selamat Datang!</h2>
+                    <p>Silakan masuk untuk mulai berbelanja dan mengelola keranjang.</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Password</label>
-                    <div class="relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-lock text-gray-500"></i>
+                <div class="card-body">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" name="username" placeholder="Masukkan username Anda" required>
+                            </div>
                         </div>
-                        <input type="password" name="password" id="passwordInput" required 
-                            class="w-full bg-gray-900 text-white pl-10 pr-12 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition placeholder-gray-600" 
-                            placeholder="••••••••">
-                        
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePassword()">
-                            <i class="fas fa-eye text-gray-500 hover:text-blue-400 transition" id="eyeIcon" title="Lihat Password"></i>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" name="password" id="passwordInput" placeholder="••••••••" required>
+                                <button type="button" class="toggle-btn" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
                         </div>
+
+                        <button type="submit" class="btn-primary">
+                            Masuk Akun <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </form>
+
+                    <div class="card-footer">
+                        <p>Belum terdaftar sebagai pelanggan? <br>
+                            <a href="register.html" class="link-register">Daftar Akun Baru</a>
+                        </p>
                     </div>
                 </div>
-
-                <button type="submit" 
-                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white font-bold py-3 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 active:translate-y-0 duration-200 uppercase tracking-wide">
-                    Masuk Akun <i class="fas fa-sign-in-alt ml-2"></i>
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-400">
-                    Belum terdaftar sebagai pelanggan? 
-                    <a href="{{ url_for('register') }}" class="text-blue-400 hover:text-blue-300 font-bold hover:underline transition">
-                        Daftar Akun Baru
-                    </a>
-                </p>
             </div>
         </div>
-    </div>
-</div>
-
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('passwordInput');
-        const eyeIcon = document.getElementById('eyeIcon');
-        
-        // Cek tipe input, jika password ubah ke text, jika text ubah ke password
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash'); // Mengubah ikon jadi mata dicoret
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye'); // Mengembalikan ikon mata normal
-        }
-    }
-</script>
-{% endblock %}
+    </main>
+    
+    <script src="static/js/main.js"></script>
+</body>
+</html>

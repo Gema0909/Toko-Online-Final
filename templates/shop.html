@@ -1,63 +1,144 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gema Store - Katalog Produk</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/shop.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="fas fa-shopping-bag"></i> Toko Online
+            </div>
+            <div class="nav-links">
+                <span class="nav-greeting">Hi, Pelanggan</span>
+                <a href="shop.html" class="nav-link text-blue"><i class="fas fa-store"></i> Produk</a>
+                <a href="cart.html" class="nav-link cart-link">
+                    <i class="fas fa-shopping-cart"></i> Keranjang
+                    <span class="cart-badge">2</span>
+                </a>
+                <a href="orders.html" class="nav-link text-purple"><i class="fas fa-receipt"></i> Pesanan Saya</a>
+                <a href="login.html" class="nav-link text-red logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
+    </nav>
 
-{% block content %}
-<div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-8 mb-8 text-center shadow-2xl border border-gray-700 relative overflow-hidden">
-    <i class="fas fa-tags absolute -left-10 top-0 text-9xl text-white opacity-5 transform -rotate-12"></i>
-    <i class="fas fa-box-open absolute -right-10 bottom-0 text-9xl text-white opacity-5 transform rotate-12"></i>
-    
-    <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-2">
-        KATALOG PRODUK
-    </h1>
-    <p class="text-gray-300">Temukan barang impianmu dengan harga terbaik di sini!</p>
-</div>
-
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    {% for item in items %}
-    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-blue-500 transition duration-300 group flex flex-col relative">
-        <span class="absolute top-3 left-3 bg-blue-600/80 text-white text-xs px-2.5 py-1 rounded-full font-semibold z-10">
-            {{ item.category }}
-        </span>
-
-        <div class="h-44 bg-gray-900 overflow-hidden">
-            <img
-                src="{{ url_for('static', filename='images/' + item.image) }}"
-                alt="{{ item.name }}"
-                class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+    <main class="main-container shop-container">
+        
+        <div class="shop-banner">
+            <i class="fas fa-tags banner-icon icon-left"></i>
+            <i class="fas fa-box-open banner-icon icon-right"></i>
+            
+            <h1 class="banner-title">KATALOG PRODUK</h1>
+            <p class="banner-subtitle">Temukan barang impianmu dengan harga terbaik di sini!</p>
         </div>
 
-        <div class="p-5 flex-grow flex flex-col justify-between">
-            <div>
-                <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition">{{ item.name }}</h3>
-                <p class="text-gray-400 text-xs mb-4 line-clamp-2 min-h-[2rem]">{{ item.description or 'Tidak ada deskripsi produk.' }}</p>
-            </div>
-
-            <div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-500 text-xs font-bold">Stok: <span class="{{ 'text-green-400' if item.stock > 5 else 'text-red-400' }}">{{ item.stock }}</span></span>
-                    <div class="text-green-400 font-bold text-lg">
-                        Rp {{ "{:,.0f}".format(item.price).replace(',', '.') }}
+        <div class="product-grid">
+            
+            <div class="product-card group">
+                <span class="category-badge">Pakaian</span>
+                <div class="product-img-wrapper">
+                    <img src="https://via.placeholder.com/400x300?text=Kemeja+Flanel" alt="Kemeja Flanel" class="product-img">
+                </div>
+                <div class="product-body">
+                    <div>
+                        <h3 class="product-title">Kemeja Flanel Lengan Panjang</h3>
+                        <p class="product-desc">Kemeja flanel berkualitas dengan bahan katun lembut yang nyaman dipakai sehari-hari.</p>
+                    </div>
+                    <div>
+                        <div class="product-meta">
+                            <span class="stock-info">Stok: <span class="text-green">15</span></span>
+                            <div class="price">Rp 150.000</div>
+                        </div>
+                        <form class="add-to-cart-form">
+                            <button type="submit" class="btn-buy">
+                                <i class="fas fa-cart-plus"></i> Beli / + Keranjang
+                            </button>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                <form action="{{ url_for('add_to_cart', product_id=item.id) }}" method="POST">
-                    {% if item.stock > 0 %}
-                        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
-                            <i class="fas fa-cart-plus"></i> Beli / + Keranjang
-                        </button>
-                    {% else %}
-                        <button type="button" disabled class="w-full py-2.5 bg-gray-700 text-gray-500 rounded-lg font-bold cursor-not-allowed border border-gray-600">
+            <div class="product-card group">
+                <span class="category-badge">Aksesoris</span>
+                <div class="product-img-wrapper">
+                    <img src="https://via.placeholder.com/400x300?text=Topi+Baseball" alt="Topi Baseball" class="product-img">
+                </div>
+                <div class="product-body">
+                    <div>
+                        <h3 class="product-title">Topi Baseball Hitam</h3>
+                        <p class="product-desc">Topi casual warna hitam solid, cocok untuk kegiatan outdoor dan nongkrong.</p>
+                    </div>
+                    <div>
+                        <div class="product-meta">
+                            <span class="stock-info">Stok: <span class="text-red">3</span></span>
+                            <div class="price">Rp 50.000</div>
+                        </div>
+                        <form class="add-to-cart-form">
+                            <button type="submit" class="btn-buy">
+                                <i class="fas fa-cart-plus"></i> Beli / + Keranjang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card group">
+                <span class="category-badge">Elektronik</span>
+                <div class="product-img-wrapper">
+                    <img src="https://via.placeholder.com/400x300?text=Smartwatch" alt="Smartwatch" class="product-img grayscale">
+                </div>
+                <div class="product-body">
+                    <div>
+                        <h3 class="product-title">Smartwatch Sport</h3>
+                        <p class="product-desc">Jam tangan pintar dengan fitur pemantau detak jantung dan pedometer.</p>
+                    </div>
+                    <div>
+                        <div class="product-meta">
+                            <span class="stock-info">Stok: <span class="text-red">0</span></span>
+                            <div class="price">Rp 350.000</div>
+                        </div>
+                        <button type="button" disabled class="btn-disabled">
                             Stok Habis
                         </button>
-                    {% endif %}
-                </form>
+                    </div>
+                </div>
             </div>
+
+            <div class="product-card group">
+                <span class="category-badge">Sepatu</span>
+                <div class="product-img-wrapper">
+                    <img src="https://via.placeholder.com/400x300?text=Sepatu+Sneakers" alt="Sepatu Sneakers" class="product-img">
+                </div>
+                <div class="product-body">
+                    <div>
+                        <h3 class="product-title">Sepatu Sneakers Putih</h3>
+                        <p class="product-desc">Tidak ada deskripsi produk.</p>
+                    </div>
+                    <div>
+                        <div class="product-meta">
+                            <span class="stock-info">Stok: <span class="text-green">24</span></span>
+                            <div class="price">Rp 300.000</div>
+                        </div>
+                        <form class="add-to-cart-form">
+                            <button type="submit" class="btn-buy">
+                                <i class="fas fa-cart-plus"></i> Beli / + Keranjang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
-    {% else %}
-    <div class="col-span-4 text-center py-12 text-gray-500">
-        <i class="fas fa-folder-open text-5xl mb-3"></i>
-        <p>Belum ada produk yang dipajang di toko ini.</p>
-    </div>
-    {% endfor %}
-</div>
-{% endblock %}
+    </main>
+
+    <footer class="footer">
+        &copy; 2026 Toko Online E-Commerce System. All Rights Reserved.
+    </footer>
+
+    <script src="static/js/main.js"></script>
+    <script src="static/js/shop.js"></script>
+</body>
