@@ -17,8 +17,15 @@ function loadShopProducts() {
 
             data.forEach(product => {
                 const formatHarga = new Intl.NumberFormat('id-ID').format(product.price);
-                const imageSrc = product.image ? product.image : 'https://placehold.co/300x300?text=Tidak+Ada+Gambar';
-
+                // Memastikan alamat gambar mengarah ke folder static/uploads jika berupa nama file biasa
+                let imageSrc = 'https://placehold.co/300x300?text=Tidak+Ada+Gambar';
+                if (product.image) {
+                    if (product.image.startsWith('http') || product.image.startsWith('/')) {
+                        imageSrc = product.image; // Jika sudah berupa link utuh atau path absolut
+                    } else {
+                        imageSrc = '/static/uploads/' + product.image; // Jika hanya nama file (misal: gambar.jpg)
+                    }
+                }
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.innerHTML = `
