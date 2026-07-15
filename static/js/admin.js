@@ -165,6 +165,28 @@ function openEditModal(productId) {
     document.getElementById('edit_stock').value = product.stock;
     document.getElementById('edit_description').value = product.description || '';
 
+    // -------------------------------------------------------------------------
+    // SISIPAN BARU: Logika Reset Input & Preview Foto (Tidak merusak kode asli)
+    // -------------------------------------------------------------------------
+    const imageInput = document.getElementById('edit_image');
+    if (imageInput) imageInput.value = ''; // Reset input file berkas lama
+
+    const previewImg = document.getElementById('edit_image_preview');
+    const previewContainer = document.getElementById('edit_image_preview_container');
+    
+    if (previewImg && previewContainer) {
+        if (product.image) {
+            // Cek apakah path berupa URL penuh atau file lokal dari folder uploads
+            previewImg.src = product.image.startsWith('http') || product.image.startsWith('/') 
+                ? product.image 
+                : '/static/uploads/' + product.image;
+            previewContainer.style.display = 'block';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    }
+    // -------------------------------------------------------------------------
+
     // Tampilkan modal ke layar
     document.getElementById('editModal').classList.remove('hidden');
 }
@@ -172,6 +194,30 @@ function openEditModal(productId) {
 function closeEditModal() {
     document.getElementById('editModal').classList.add('hidden');
 }
+
+// -------------------------------------------------------------------------
+// SISIPAN BARU: Jalankan Fungsi Live Preview Saat Admin Mengganti File Foto
+// -------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const editImageInput = document.getElementById('edit_image');
+    if (editImageInput) {
+        editImageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('edit_image_preview');
+                    const container = document.getElementById('edit_image_preview_container');
+                    if (preview && container) {
+                        preview.src = e.target.result;
+                        container.style.display = 'block';
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
 
 // ==========================================
 // 6. MENYIMPAN PERUBAHAN EDIT KE DATABASE (API CALL)
