@@ -174,6 +174,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Jalankan update badge keranjang otomatis
     updateCartBadge();
 
+    // Navigasi otomatis admin/user
+    aturNavigasiOtomatis();
+
     // B. Menghilangkan Notifikasi/Alert otomatis setelah 5 detik
     const alerts = document.querySelectorAll('.alert, [role="alert"]');
     alerts.forEach(function(alert) {
@@ -238,5 +241,52 @@ function updateCartBadge() {
         badge.style.display = 'inline-block'; // Tampilkan badge merah jika ada barang
     } else {
         badge.style.display = 'none'; // Sembunyikan jika keranjang kosong
+    }
+}
+
+// =========================================================================
+// TARUH KODE INI DI BARIS PALING BAWAH FILE main.js KAMU
+// =========================================================================
+function aturNavigasiOtomatis() {
+    // Membidik target container menu sesuai class di HTML
+    const navLinksContainer = document.querySelector('.nav-links');
+    if (!navLinksContainer) return;
+
+    // Cek apakah URL browser saat ini sedang membuka halaman admin
+    if (window.location.pathname.startsWith('/admin')) {
+        
+        // Tampilkan menu khusus admin
+        navLinksContainer.innerHTML = `
+            <span class="nav-greeting">Hi, Admin</span>
+            
+            <a href="/admin/dashboard" class="nav-link">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            
+            <a href="/admin/products" class="nav-link text-blue">
+                <i class="fas fa-boxes"></i> Kelola Produk
+            </a>
+            
+            <a href="/admin/orders" class="nav-link text-purple">
+                <i class="fas fa-history"></i> Pesanan Masuk
+            </a>
+            
+            <a href="/logout" class="nav-link text-red logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        `;
+        
+    } else {
+        // Tampilkan menu user biasa (menggunakan isi bawaan HTML asli kamu)
+        // Kita cuma kasih ID tambahan ke badge merah keranjang agar sistem belanja berfungsi
+        const badge = navLinksContainer.querySelector('.cart-badge');
+        if (badge) {
+            badge.setAttribute('id', 'cart-badge');
+            
+            // Jalankan update badge otomatis jika fungsinya tersedia
+            if (typeof updateCartBadge === 'function') {
+                updateCartBadge();
+            }
+        }
     }
 }
