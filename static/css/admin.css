@@ -419,3 +419,59 @@
     border-color: #10b981; 
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
+
+/* =========================================================================
+   PERBAIKAN DESAIN TABEL KATALOG PRODUK ADMIN
+   ========================================================================= */
+
+/* Pastikan tabel mengambil lebar penuh secara proporsional */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+/* Jarak dan batas pada judul (th) dan isi (td) */
+table th, 
+table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #374151; /* Warna garis batas yang redup */
+    color: #e5e7eb;
+}
+
+/* Judul Kolom (Atas) */
+table th {
+    background-color: #111827; /* Warna gelap untuk bagian kepala tabel */
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+/* PERBAIKAN SEJAJAR (ALIGNMENT) */
+/* Kolom Nama & Kategori dibuat rata kiri */
+table th:nth-child(1), table td:nth-child(1),
+table th:nth-child(2), table td:nth-child(2) {
+    text-align: left;
+}
+
+/* Kolom Harga, Stok, dan Aksi dibuat rata tengah (Center) agar pas di bawah judul */
+table th:nth-child(3), table td:nth-child(3), /* Harga */
+table th:nth-child(4), table td:nth-child(4), /* Stok */
+table th:nth-child(5), table td:nth-child(5)  /* Aksi */ {
+    text-align: center;
+    white-space: nowrap; /* Mencegah kolom ini terpotong ke bawah */
+}
+
+/* Warna tombol di kolom aksi */
+table td .btn-edit, 
+table td .btn-delete {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin: 0 2px;
+    border: none;
+    cursor: pointer;
+}
+table td .btn-edit { background-color: #3b82f6; color: white; }
+table td .btn-delete { background-color: #ef4444; color: white; }
