@@ -267,19 +267,19 @@ function aturNavigasiOtomatis() {
         navLinksContainer.innerHTML = `
             <span class="nav-greeting">Hi, Admin</span>
             
-            <a href="/admin/dashboard" class="nav-link">
+            <a href="/admin" class="nav-link">
                 <i class="fas fa-chart-line"></i> Dashboard
             </a>
             
-            <a href="/admin/products" class="nav-link text-blue">
+            <a href="/admin" class="nav-link text-blue">
                 <i class="fas fa-boxes"></i> Kelola Produk
             </a>
             
-            <a href="/admin/orders" class="nav-link text-purple">
+            <a href="/admin" class="nav-link text-purple">
                 <i class="fas fa-history"></i> Pesanan Masuk
             </a>
             
-            <a href="/logout" class="nav-link text-red logout-btn">
+            <a href="/login" class="nav-link text-red logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         `;
