@@ -262,3 +262,48 @@
     font-size: 1.125rem;
     font-weight: 500;
 }
+
+/* --- PERBAIKAN UKURAN KARTU & DESKRIPSI PRODUK --- */
+
+/* Memaksa semua kartu dalam grid memiliki tinggi yang sama persis */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+/* Area teks mengambil seluruh sisa ruang kosong di tengah kartu */
+.product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mengatur ukuran dan warna deskripsi agar tidak menutupi info penting */
+.product-desc {
+    font-size: 0.85rem;
+    color: #9ca3af; /* Warna abu-abu redup (muted) */
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+    
+    /* Membatasi deskripsi maksimal 2 baris. Sisanya jadi titik-titik (...) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Memastikan elemen harga dan stok ada di bawah deskripsi */
+.product-info .price {
+    margin-top: auto; /* Mendorong harga ke bawah area info */
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #34d399; /* Warna hijau emerald */
+}
+
+/* Memastikan tombol tambah selalu nempel di ujung paling bawah kartu */
+.btn-add-cart {
+    margin-top: 15px !important; 
+    width: 100%;
+}

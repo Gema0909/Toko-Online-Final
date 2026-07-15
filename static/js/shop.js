@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Merender HTML menggunakan JavaScript murni (Tanpa Jinja)
             products.forEach(item => {
+                // Beri nilai default jika deskripsi kosong dari database
+                const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
                 const productCard = `
                     <div class="product-card">
                         <img 
