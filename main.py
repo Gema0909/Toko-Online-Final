@@ -343,6 +343,28 @@ def api_update_product(product_id):
     except Exception as e:
         print("Error update produk:", e)
         return jsonify({"success": False, "message": str(e)}), 500
+    
+# Pastikan 'jsonify' sudah di-import di bagian paling atas file Python Anda, contoh:
+# from flask import Flask, jsonify, render_template ...
+@app.route('/api/my-orders')
+def get_my_orders():
+    # Ini adalah jalur aman agar web Anda TIDAK crash/error meskipun database belum dibuat
+    try:
+        # 1. Jika Anda sudah punya koneksi database, silakan aktifkan bagian ini:
+        # conn = get_db_connection()
+        # cursor = conn.cursor(dictionary=True)
+        # cursor.execute("SELECT * FROM orders ORDER BY id DESC")
+        # orders = cursor.fetchall()
+        # conn.close()
+        # return jsonify(orders)
+        
+        # 2. SEMENTARA: Kita berikan list kosong [] agar JavaScript membaca "belum ada pesanan"
+        # dan tidak memunculkan pesan error merah lagi di layar Anda.
+        return jsonify([])
+        
+    except Exception as e:
+        print("Ada error di database orders:", e)
+        return jsonify([]) # Tetap kembalikan array kosong sebagai penyelamat
 
 # Jalankan Server Utama
 if __name__ == '__main__':
