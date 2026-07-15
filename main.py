@@ -189,6 +189,73 @@ def api_delete_product(product_id):
     except Exception as e:
         print("Error saat menghapus produk:", e)
         return jsonify({"success": False, "message": f"Gagal menghapus produk: {str(e)}"}), 500
+    
+# ==========================================
+#          API DASHBOARD UTAMA ADMIN
+# ==========================================
+
+# 1. API untuk Mengambil Statistik Uang & Transaksi
+@app.route('/api/admin/stats', methods=['GET'])
+def api_admin_stats():
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Hitung total pendapatan dari pesanan yang status pembayarannya 'Lunas'
+            cursor.execute("SELECT SUM(total_price) as total_revenue FROM orders WHERE payment_status = 'Lunas'")
+            res_rev = cursor.fetchone()
+            total_revenue = res_rev['total_revenue'] if res_rev['total_revenue'] else 0
+            
+            # Hitung total seluruh pesanan masuk
+            cursor.execute("SELECT COUNT(*) as total_orders FROM orders")
+            res_ord = cursor.fetchone()
+            total_orders = res_ord['total_orders'] if res_ord['total_orders'] else 0
+            
+        conn.close()
+        return jsonify({"success": True, "total_revenue": total_revenue, "total_orders": total_orders})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+# 2. API untuk Mengambil Semua Antrean Pesanan
+@app.route('/api/admin/orders', methods=['GET'])
+def api_admin_orders():
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Mengambil data antrean pesanan terbaru
+            cursor.execute("SELECT * FROM orders ORDER BY id DESC")
+            orders = cursor.fetchall()
+            
+            # Konversi format tanggal agar aman saat dikirim ke JavaScript
+            for order in orders:
+                if 'created_at' in order and order['created_at']:
+                    order['created_at'] = order['created_at'].strftime('%d %b %Y %H:%M')
+        conn.close()
+        return jsonify(orders)
+    except Exception as e:
+        print("Error fetch orders:", e)
+        return jsonify([]), 500
+
+# 3. API untuk Mengubah Status Pengiriman Pesanan (Pending -> Diproses -> dll)
+@app.route('/api/admin/orders/<int:order_id>/status', methods=['POST'])
+def api_update_order_status(order_id):
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+    try:
+        data = request.json
+        new_status = data.get('status')
+        
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("UPDATE orders SET status = %s WHERE id = %s", (new_status, order_id))
+            conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Status pesanan berhasil diperbarui!"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':
