@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const tempatProduk = document.getElementById("tempat-produk");
 
     // 1. Telepon URL Backend (Flask) kita
-    fetch('https://toko-online-final-production.up.railway.app/api/products')
+    fetch('/api/products')
         .then(response => response.json())
         .then(dataProduk => {
             
