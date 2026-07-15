@@ -255,46 +255,46 @@ function updateCartBadge() {
 }
 
 function aturNavigasiOtomatis() {
-    console.log("🔍 DETEKTIF: Fungsi aturNavigasiOtomatis() BERHASIL dipanggil!");
-    
-    // 1. Cek apakah elemen navbar ditemukan
     const navLinksContainer = document.querySelector('.nav-links');
-    console.log("🔍 DETEKTIF: Apakah elemen .nav-links ditemukan?", navLinksContainer);
+    if (!navLinksContainer) return;
 
-    if (!navLinksContainer) {
-        console.log("❌ DETEKTIF ERROR: Elemen .nav-links TIDAK DITEMUKAN di halaman ini. Fungsi berhenti.");
-        return;
-    }
-
-    // 2. Cek apa isi URL yang dibaca browser saat ini
-    const pathSaatIni = window.location.pathname;
-    console.log("🔍 DETEKTIF: URL Path yang terbaca di browser adalah:", pathSaatIni);
-
-    // 3. Cek apakah URL mengandung kata 'admin'
-    if (pathSaatIni.toLowerCase().includes('admin')) {
-        console.log("🚀 DETEKTIF SUKSES: URL mengandung kata 'admin'! Harusnya navbar BERUBAH sekarang.");
+    // Cek apakah URL diawali dengan /admin
+    if (window.location.pathname.toLowerCase().startsWith('/admin')) {
         
+        // =========================================================================
+        // TAMPILKAN MENU KHUSUS ADMIN (Menggunakan rute backend asli Anda)
+        // =========================================================================
         navLinksContainer.innerHTML = `
             <span class="nav-greeting">Hi, Admin</span>
-            <a href="admin.html" class="nav-link">
+            
+            <a href="/admin/dashboard" class="nav-link">
                 <i class="fas fa-chart-line"></i> Dashboard
             </a>
-            <a href="admin.html" class="nav-link text-blue">
+            
+            <a href="/admin/products" class="nav-link text-blue">
                 <i class="fas fa-boxes"></i> Kelola Produk
             </a>
-            <a href="admin.html" class="nav-link text-purple">
+            
+            <a href="/admin/orders" class="nav-link text-purple">
                 <i class="fas fa-history"></i> Pesanan Masuk
             </a>
-            <a href="login.html" class="nav-link text-red logout-btn">
+            
+            <a href="/logout" class="nav-link text-red logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         `;
         
     } else {
-        console.log("ℹ️ DETEKTIF INFO: URL tidak mengandung kata 'admin'. Menampilkan menu user biasa.");
+        // =========================================================================
+        // UNTUK HALAMAN USER BIASA (Misal: /, /shop, /cart, dll)
+        // =========================================================================
         const badge = navLinksContainer.querySelector('.cart-badge');
         if (badge) {
             badge.setAttribute('id', 'cart-badge');
+            
+            if (typeof updateCartBadge === 'function') {
+                updateCartBadge();
+            }
         }
     }
 }
