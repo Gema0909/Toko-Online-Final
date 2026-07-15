@@ -272,23 +272,26 @@
     height: 100%; 
 }
 
-/* Area teks mengambil seluruh sisa ruang kosong di tengah kartu */
+/* --- AREA INFORMASI PRODUK --- */
 .product-info {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start; /* Memastikan teks rapi dari atas ke bawah */
 }
 
-/* Mengatur ukuran dan warna deskripsi agar tidak menutupi info penting */
+/* --- DESAIN KHUSUS DESKRIPSI --- */
 .product-desc {
-    font-size: 0.85rem;
-    color: #9ca3af; /* Warna abu-abu redup (muted) */
+    font-size: 0.875rem; /* Ukuran font pas, tidak kekecilan */
+    color: #d1d5db; /* Warna abu-abu terang, lebih kontras dan nyaman dibaca */
     margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    line-height: 1.5; /* Jarak antar baris agar teks tidak berdempetan */
     
-    /* Membatasi deskripsi maksimal 2 baris. Sisanya jadi titik-titik (...) */
+    /* Membatasi teks maksimal 3 baris. Jika lebih, otomatis jadi titik-titik (...) */
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
