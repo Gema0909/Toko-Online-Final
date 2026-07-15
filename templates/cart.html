@@ -42,29 +42,7 @@
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p class="product-name">Kemeja Flanel Lengan Panjang</p>
-                                <p class="product-price">Rp 150.000</p>
-                            </td>
-                            <td class="text-center font-semibold">1x</td>
-                            <td class="text-right font-bold text-green">Rp 150.000</td>
-                            <td class="text-center">
-                                <a href="#" class="btn-delete"><i class="fas fa-trash"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p class="product-name">Topi Baseball Hitam</p>
-                                <p class="product-price">Rp 50.000</p>
-                            </td>
-                            <td class="text-center font-semibold">2x</td>
-                            <td class="text-right font-bold text-green">Rp 100.000</td>
-                            <td class="text-center">
-                                <a href="#" class="btn-delete"><i class="fas fa-trash"></i></a>
-                            </td>
-                        </tr>
+                    <tbody id="cart-items-container">
                     </tbody>
                 </table>
             </div>
@@ -72,8 +50,7 @@
             <div class="cart-summary-wrapper">
                 <h3 class="summary-title">Ringkasan Belanja</h3>
                 <div class="summary-total">
-                    <span>Total Harga:</span>
-                    <span class="total-price">Rp 250.000</span>
+                    <p>Total Harga: <span id="cart-total-price">Rp 0</span></p>
                 </div>
 
                 <form id="checkoutForm" class="checkout-form">

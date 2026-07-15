@@ -149,3 +149,79 @@
 .text-right { text-align: right; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
+
+/* =======================================================
+   STYLING DINAMIS UNTUK HALAMAN KERANJANG BELANJA (CART)
+   ======================================================= */
+
+/* Desain baris saat keranjang kosong */
+.cart-empty-cell {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+}
+
+.cart-empty-link {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.cart-empty-link:hover {
+    text-decoration: underline;
+}
+
+/* Desain garis pembatas antar baris produk */
+.cart-row {
+    border-bottom: 1px solid #2c3e50;
+}
+
+/* Desain kolom nama & detail produk */
+.cart-product-cell {
+    padding: 15px 10px;
+}
+
+.cart-product-name {
+    font-weight: bold;
+    color: #fff;
+}
+
+.cart-product-price {
+    font-size: 12px;
+    color: #bdc3c7;
+}
+
+/* Desain kolom jumlah produk (Qty) */
+.cart-qty-cell {
+    padding: 15px 10px;
+    color: #fff;
+    text-align: center;
+}
+
+/* Desain kolom subtotal harga */
+.cart-subtotal-cell {
+    padding: 15px 10px;
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* Desain kolom aksi hapus */
+.cart-action-cell {
+    padding: 15px 10px;
+    text-align: center;
+}
+
+/* Tombol sampah merah yang interaktif */
+.cart-delete-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Efek saat tombol sampah disentuh mouse */
+.cart-delete-btn:hover {
+    color: #c0392b;
+    transform: scale(1.15); /* Membesar sedikit saat di-hover */
+}

@@ -313,3 +313,9 @@ body {
     font-style: italic;
     margin-top: 0.5rem;
 }
+
+/* Styling khusus untuk teks angka total harga di keranjang */
+#cart-total-price {
+    color: #2ecc71;
+    font-weight: bold;
+}
