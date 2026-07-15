@@ -1,56 +1,55 @@
-// Membuka Modal Edit dan mengisi data (Dummy Demo)
-function openEditModal(name, category, price, stock, description) {
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_category').value = category;
-    document.getElementById('edit_price').value = price;
-    document.getElementById('edit_stock').value = stock;
-    document.getElementById('edit_description').value = description || '';
-
-    // Tampilkan modal dengan menghapus class 'hidden'
-    document.getElementById('editModal').classList.remove('hidden');
-}
-
-// Menutup Modal Edit
-function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
-}
-
-// Menghilangkan pesan notifikasi (alert) otomatis dalam 5 detik
-document.addEventListener("DOMContentLoaded", function() {
-    const alerts = document.querySelectorAll('.alert, .flash, [role="alert"]');
+// Fungsi untuk mengambil data produk dari database dan menampilkannya di tabel
+function loadAdminProducts() {
+    const tableBody = document.getElementById('admin-product-list');
     
-    alerts.forEach(function(alert) {
-        setTimeout(function() {
-            alert.style.transition = "opacity 0.5s ease-out";
-            alert.style.opacity = "0";
-            
-            setTimeout(function() {
-                alert.style.display = "none";
-                alert.remove();
-            }, 500);
-        }, 5000); 
-    });
-});
-
-// Fungsi untuk memanggil API Hapus Produk (Tambahkan di admin.js)
-function deleteProduct(productId, productName) {
-    // Tampilkan konfirmasi popup sebelum benar-benar menghapus
-    if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
-        fetch(`/api/products/${productId}`, {
-            method: 'DELETE'
-        })
+    fetch('/api/products')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload(); // Refresh halaman untuk memperbarui daftar produk
-            } else {
-                alert("Gagal menghapus produk: " + data.message);
+            // Kosongkan pesan "Sedang memuat..."
+            tableBody.innerHTML = '';
+
+            // Jika database kosong
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Belum ada produk di database.</td></tr>`;
+                return;
             }
+
+            // Looping/Ulangi untuk setiap produk yang ada di database
+            data.forEach(product => {
+                // Format harga ke Rupiah
+                const formatHarga = new Intl.NumberFormat('id-ID').format(product.price);
+                
+                // Hindari error jika deskripsi kosong (null)
+                const desc = product.description ? product.description : '';
+                const category = product.category ? product.category : '-';
+
+                // Buat baris tabel baru (tr)
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="font-bold">${product.name}</td>
+                    <td>${category}</td>
+                    <td class="text-right text-green font-bold">${formatHarga}</td>
+                    <td class="text-center">${product.stock}</td>
+                    <td class="text-center action-btns">
+                        <button class="btn-icon text-blue" onclick="openEditModal('${product.name}', '${category}', '${product.price}', '${product.stock}', '${desc}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        
+                        <button class="btn-icon text-red" onclick="deleteProduct(${product.id}, '${product.name}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
         })
         .catch(error => {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan sistem saat menghapus produk.");
+            console.error('Error fetching products:', error);
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-red">Gagal memuat data produk!</td></tr>`;
         });
-    }
 }
+
+// Panggil fungsi secara otomatis saat halaman Admin pertama kali dibuka
+document.addEventListener('DOMContentLoaded', () => {
+    loadAdminProducts();
+});
