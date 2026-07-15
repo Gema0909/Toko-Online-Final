@@ -184,3 +184,36 @@
     cursor: not-allowed;
     text-align: center;
 }
+
+/* Styling untuk teks loading saat mengambil data dari database */
+.loading-text {
+    color: white;
+    text-align: center;
+    grid-column: span 4; /* Agar teks berada di tengah meskipun grid-nya 4 kolom */
+    padding: 3rem 0;     /* Tambahan jarak atas-bawah agar lebih enak dilihat */
+    font-size: 1.125rem;
+}
+
+/* Styling untuk keadaan database kosong */
+.empty-state {
+    grid-column: span 4;
+    text-align: center;
+    color: #9ca3af; /* Warna abu-abu gray-400 */
+    padding: 3rem 0;
+}
+
+.empty-state .icon-empty {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #6b7280; /* Warna abu-abu sedikit lebih gelap */
+}
+
+/* Styling untuk pesan error ketika backend mati */
+.error-text {
+    color: #ef4444; /* Warna merah cerah red-500 */
+    text-align: center;
+    grid-column: span 4;
+    padding: 2rem 0;
+    font-size: 1.125rem;
+    font-weight: 500;
+}

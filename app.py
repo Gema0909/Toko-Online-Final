@@ -1,21 +1,31 @@
-# app.py
-from flask import Flask
+from flask import Flask, jsonify
+from flask_cors import CORS # Wajib di-install: pip install flask-cors
+from pymongo import MongoClient
 import os
-from router.routes import bp as main_blueprint  # Mengimpor blueprint dari routes.py
 
 app = Flask(__name__)
-app.secret_key = 'kunci_rahasia_toko_online_super_aman'
+CORS(app) # Mengizinkan file HTML statis menelepon API ini
 
-# --- PERBAIKAN 1: OTOMATIS BUAT FOLDER JIKA BELUM ADA DI RAILWAY ---
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Mencegah error FileNotFoundError saat upload
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# --- GANTI DENGAN URL MONGODB ATLAS KAMU ---
+MONGO_URI = "mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority"
 
-# Daftarkan blueprint ke dalam aplikasi utama
-app.register_blueprint(main_blueprint)
+try:
+    client = MongoClient(MONGO_URI)
+    db = client['toko_online']
+    products_collection = db['products']
+    print("Berhasil terhubung ke MongoDB!")
+except Exception as e:
+    print("Gagal terhubung ke MongoDB:", e)
+
+# API Endpoint untuk Mengambil Data Produk
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    # Mengambil semua data produk dari MongoDB
+    # (Kita menyembunyikan '_id' bawaan mongo agar mudah dibaca oleh JavaScript)
+    products = list(products_collection.find({}, {'_id': 0}))
+    
+    # Mengirimkan data dalam format JSON
+    return jsonify(products)
 
 if __name__ == '__main__':
-    # --- PERBAIKAN 2: BINDING PORT RAILWAY ---
-    # Railway mengharuskan host 0.0.0.0 dan port diambil dari environment sistem
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True, port=5000)

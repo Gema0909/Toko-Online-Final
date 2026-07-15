@@ -1,2 +1,5 @@
 Flask==3.0.0
 mysql-connector-python
+pymongo
+flask-cors
+gunicorn
