@@ -1,11 +1,12 @@
 import os
-from flask import Flask, jsonify, render_template  # <-- Tambahkan render_template di sini
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 import pymysql
 
 app = Flask(__name__)
 CORS(app)
 
+# Fungsi koneksi database MySQL Railway
 def get_db_connection():
     return pymysql.connect(
         host=os.environ.get('MYSQLHOST', 'localhost'),
@@ -16,12 +17,12 @@ def get_db_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-# 1. ROUTE BARU: Menampilkan halaman utama website (shop.html)
-@app.route('/')
-def home():
-    return render_template('shop.html')  # Flask otomatis mencari file ini di dalam folder 'templates'
+# =========================================================
+# 1. API ENDPOINT (DATABASE)
+# *Wajib ditaruh di atas agar tidak bertabrakan dengan halaman web*
+# =========================================================
 
-# 2. API Endpoint untuk mengambil data produk
+# Mengambil data produk dari MySQL
 @app.route('/api/products', methods=['GET'])
 def get_products():
     try:
@@ -34,6 +35,31 @@ def get_products():
     except Exception as e:
         print("Error database:", e)
         return jsonify({"error": str(e)}), 500
+
+
+# =========================================================
+# 2. RUTE UNTUK MENAMPILKAN HALAMAN WEB (HTML)
+# =========================================================
+
+# Halaman Utama / Beranda (shop.html)
+@app.route('/')
+def home():
+    return render_template('shop.html')
+
+# 🔥 RUTE OTOMATIS SAKTI 🔥
+# Kode ini akan otomatis membaca semua file HTML di folder 'templates' kamu!
+@app.route('/<path:page_name>')
+def render_any_page(page_name):
+    # Jika di browser diketik pakai akhiran '.html' (misal: login.html), kita bersihkan dulu
+    if page_name.endswith('.html'):
+        page_name = page_name[:-5]
+        
+    try:
+        # Flask akan otomatis mencari '[nama_halaman].html' di folder templates
+        return render_template(f'{page_name}.html')
+    except Exception:
+        # Jika file HTML-nya memang tidak ada di folder templates
+        return f"Error 404: File '{page_name}.html' tidak ditemukan di dalam folder 'templates' kamu. Periksa kembali ejaan namanya!", 404
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
