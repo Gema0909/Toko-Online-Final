@@ -161,7 +161,7 @@ def admin_dashboard():
     total_sales = sum(o['total_amount'] for o in orders if o['status'] != 'Dibatalkan')
     return render_template('admin.html', user=session['user'], orders=orders, items=items, total_sales=total_sales)
 
-@bp.route('/add_product', methods=['POST'])
+@bp.route('/admin/add_product', methods=['POST'])
 def add_product_route():
     if session['user']['role'] != 'admin':
         return redirect(url_for('main.login'))
