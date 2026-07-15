@@ -1,74 +1,59 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const tempatProduk = document.getElementById("tempat-produk");
+    const tempatProduk = document.getElementById('tempat-produk');
+    const cartBadge = document.querySelector('.cart-badge');
 
-    // 1. Telepon URL Backend (Flask) kita
+    // Mengambil data produk dari database via API
     fetch('/api/products')
         .then(response => response.json())
-        .then(dataProduk => {
+        .then(products => {
+            tempatProduk.innerHTML = ''; // Hapus teks loading
             
-            // Hapus tulisan "Sedang memuat..."
-            tempatProduk.innerHTML = '';
-
-            // Jika database kosong
-            if(dataProduk.length === 0) {
-                tempatProduk.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open icon-empty"></i>
-                        <p>Belum ada produk di database MongoDB.</p>
-                    </div>
-                `;
+            if(products.length === 0) {
+                tempatProduk.innerHTML = '<p>Belum ada produk di database.</p>';
                 return;
             }
 
-            // 2. Jika ada data, buatkan kotak HTML untuk setiap produk
-            dataProduk.forEach(item => {
-                
-                // Cek status stok
-                const stokAman = item.stock > 0;
-                const warnaStok = item.stock > 5 ? 'text-green' : 'text-red';
-                const formatHarga = new Intl.NumberFormat('id-ID').format(item.price);
-                
-                // Gambar fallback jika tidak ada gambar
-                const gambarProduk = item.image ? `static/images/${item.image}` : 'https://via.placeholder.com/400x300?text=No+Image';
-
-                // Buat kotak produknya
-                const kartuProduk = `
-                    <div class="product-card group">
-                        <span class="category-badge">${item.category}</span>
-                        <div class="product-img-wrapper">
-                            <img src="${gambarProduk}" alt="${item.name}" class="product-img ${stokAman ? '' : 'grayscale'}">
-                        </div>
-                        <div class="product-body">
-                            <div>
-                                <h3 class="product-title">${item.name}</h3>
-                                <p class="product-desc">${item.description || 'Tidak ada deskripsi produk.'}</p>
-                            </div>
-                            <div>
-                                <div class="product-meta">
-                                    <span class="stock-info">Stok: <span class="${warnaStok}">${item.stock}</span></span>
-                                    <div class="price">Rp ${formatHarga}</div>
-                                </div>
-                                ${
-                                    stokAman 
-                                    ? `<button onclick="tambahKeKeranjang('${item.name}')" class="btn-buy"><i class="fas fa-cart-plus"></i> Beli</button>` 
-                                    : `<button disabled class="btn-disabled">Stok Habis</button>`
-                                }
-                            </div>
-                        </div>
+            // Merender HTML menggunakan JavaScript murni (Tanpa Jinja)
+            products.forEach(item => {
+                const productCard = `
+                    <div class="product-card">
+                        <img src="/static/uploads/${item.image || 'default.jpg'}" alt="${item.name}" style="width:100%; border-radius:8px;">
+                        <h3>${item.name}</h3>
+                        <p class="category-tag"><i class="fas fa-tag"></i> ${item.category}</p>
+                        <p class="price">Rp ${item.price.toLocaleString('id-ID')}</p>
+                        <p class="stock">Stok: ${item.stock}</p>
+                        <button class="btn-add-cart" onclick="addToCart(${item.id})">
+                            <i class="fas fa-cart-plus"></i> Tambah
+                        </button>
                     </div>
                 `;
-
-                // Masukkan ke dalam HTML
-                tempatProduk.innerHTML += kartuProduk;
+                tempatProduk.innerHTML += productCard;
             });
         })
-        .catch(error => {
-            console.error("Error:", error);
-            tempatProduk.innerHTML = '<p class="error-text">Gagal terhubung ke database. Pastikan app.py (Flask) sedang berjalan.</p>';
+        .catch(err => {
+            tempatProduk.innerHTML = '<p>Gagal memuat produk. Periksa koneksi database.</p>';
+            console.error("Error fetching products:", err);
         });
 });
 
-// Fungsi tombol beli (Simulasi sementara)
-function tambahKeKeranjang(namaBarang) {
-    alert(`"${namaBarang}" berhasil ditambahkan ke keranjang!`);
+// Fungsi untuk menambah ke keranjang via API
+function addToCart(productId) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+
+    fetch('/api/cart/add', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            alert(data.message);
+            // Update angka keranjang secara langsung
+            document.querySelector('.cart-badge').innerText = data.cart_count;
+        } else {
+            alert("Terjadi kesalahan. Silakan login kembali.");
+            window.location.href = '/login';
+        }
+    });
 }

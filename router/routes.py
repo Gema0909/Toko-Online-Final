@@ -240,3 +240,45 @@ def reject_payment_route(order_id):
     service.reject_payment(order_id)
     flash("Pembayaran ditolak.", "error")
     return redirect(url_for('main.admin_dashboard'))
+
+# --- TAMBAHKAN KODE INI DI BAWAH FILE routes.py ---
+from flask import jsonify
+
+@bp.route('/api/login', methods=['POST'])
+def api_login():
+    # Menghubungkan form login dari JS ke database service
+    username = request.form.get('username')
+    password = request.form.get('password')
+    user = service.login(username, password)
+    
+    if user:
+        session['user'] = user
+        session['cart'] = []
+        return jsonify({"status": "success", "message": "Login berhasil", "role": user['role']})
+    return jsonify({"status": "error", "message": "Username atau Password salah!"}), 401
+
+@bp.route('/api/products', methods=['GET'])
+def api_products():
+    # Mengambil data dari database service untuk ditampilkan di JS
+    items = service.get_catalog()
+    return jsonify(items)
+
+@bp.route('/api/cart/add', methods=['POST'])
+def api_add_cart():
+    if 'user' not in session: 
+        return jsonify({"status": "error", "message": "Belum login"}), 401
+    
+    product_id = request.form.get('product_id')
+    cart = session.get('cart', [])
+    
+    found = False
+    for item in cart:
+        if str(item['product_id']) == str(product_id):
+            item['quantity'] += 1
+            found = True
+            break
+    if not found:
+        cart.append({"product_id": int(product_id), "quantity": 1})
+        
+    session['cart'] = cart
+    return jsonify({"status": "success", "message": "Produk berhasil ditambahkan", "cart_count": len(cart)})

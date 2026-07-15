@@ -1,48 +1,42 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.querySelector('form');
-    
-    if (loginForm) {
+document.addEventListener("DOMContentLoaded", function() {
+    // Logika untuk menampilkan/menyembunyikan password
+    const btnToggle = document.getElementById('btnTogglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if(btnToggle) {
+        btnToggle.addEventListener('click', function() {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    }
+
+    // Logika Login menggunakan API Fetch (Tanpa Jinja)
+    const loginForm = document.getElementById('loginForm');
+    if(loginForm) {
         loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah halaman reload otomatis
-            
-            const usernameInput = document.querySelector('input[type="text"]').value;
-            const passwordInput = document.querySelector('input[type="password"]').value;
-            
-            // Kirim data login ke API Flask di app.py
+            e.preventDefault(); 
+            const formData = new FormData(loginForm);
+
             fetch('/api/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: usernameInput,
-                    password: passwordInput
-                })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert('Selamat! Login Berhasil.');
-                    
-                    // Simpan data login di browser
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('username', data.user.username);
-                    localStorage.setItem('role', data.user.role);
-                    
-                    // Alihkan ke rute Flask yang benar (tanpa .html)
-                    if (data.user.role === 'admin') {
-                        window.location.href = '/admin'; 
-                    } else {
-                        window.location.href = '/'; // Arahkan ke halaman katalog utama
-                    }
+                if(data.status === 'success') {
+                    // Jika admin ke dashboard, jika user ke shop
+                    window.location.href = data.role === 'admin' ? '/admin' : '/shop';
                 } else {
-                    alert(data.message || 'Username atau password salah!');
+                    alert(data.message);
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal terhubung ke server database!');
-            });
+            .catch(err => console.error("Error:", err));
         });
     }
 });

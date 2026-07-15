@@ -319,3 +319,65 @@ body {
     color: #2ecc71;
     font-weight: bold;
 }
+
+/* --- KODE TAMBAHAN UNTUK MOBILE RESPONSIVE --- */
+
+/* Mengatur ukuran grid produk dan navbar di HP (Maksimal layar 768px) */
+@media screen and (max-width: 768px) {
+    /* Navbar menyesuaikan layar */
+    .navbar .nav-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    /* Grid Produk berubah menjadi 1 kolom (Memanjang ke bawah) */
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* 1 kolom penuh */
+        gap: 20px;
+        padding: 10px;
+    }
+
+    /* Menyesuaikan ukuran Banner */
+    .shop-banner {
+        padding: 30px 15px;
+    }
+
+    .banner-title {
+        font-size: 24px;
+    }
+
+    .banner-subtitle {
+        font-size: 14px;
+    }
+
+    /* Menyesuaikan kartu Login di HP */
+    .login-wrapper {
+        padding: 20px 10px;
+    }
+
+    .login-card {
+        width: 100%;
+        margin: 0 auto;
+        border-radius: 12px;
+    }
+
+    .card-header h2 {
+        font-size: 22px;
+    }
+}
