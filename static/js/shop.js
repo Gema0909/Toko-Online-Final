@@ -15,20 +15,37 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Merender HTML menggunakan JavaScript murni (Tanpa Jinja)
             products.forEach(item => {
-                // Beri nilai default jika deskripsi kosong dari database
+                
+                // 1. LOGIKA GAMBAR (DIAMBIL DARI main.js AGAR GAMBAR MUNCUL)
+                let imageSrc = 'https://placehold.co/400x300/e0e0e0/666666?text=No+Image';
+                if (item.image) {
+                    if (item.image.startsWith('http') || item.image.startsWith('/')) {
+                        imageSrc = item.image; 
+                    } else {
+                        imageSrc = '/static/uploads/' + item.image; 
+                    }
+                }
+
+                // 2. LOGIKA DESKRIPSI
                 const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
+
+                // 3. HTML DIKEMBALIKAN KE STRUKTUR ASLI (Tanpa div product-info)
                 const productCard = `
                     <div class="product-card">
                         <img 
-                            src="/static/img/${item.image}" 
+                            src="${imageSrc}" 
                             onerror="this.onerror=null; this.src='https://placehold.co/400x300/e0e0e0/666666?text=No+Image';" 
                             alt="${item.name}" 
-                            style="width:100%; border-radius:8px; object-fit: cover; aspect-ratio: 4/3;"
+                            style="width:100%; border-radius:8px; object-fit: cover; aspect-ratio: 4/3; margin-bottom: 10px;"
                         >
                         <h3>${item.name}</h3>
                         <p class="category-tag"><i class="fas fa-tag"></i> ${item.category}</p>
+                        
+                        <p class="product-desc">${descText}</p>
+                        
                         <p class="price">Rp ${item.price.toLocaleString('id-ID')}</p>
                         <p class="stock">Stok: ${item.stock}</p>
+                        
                         <button class="btn-add-cart" onclick="addToCart(${item.id})">
                             <i class="fas fa-cart-plus"></i> Tambah
                         </button>
@@ -37,11 +54,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 tempatProduk.innerHTML += productCard;
             });
         })
-        .catch(err => {
-            tempatProduk.innerHTML = '<p>Gagal memuat produk. Periksa koneksi database.</p>';
-            console.error("Error fetching products:", err);
-        });
-});
 
 // Fungsi untuk menambah ke keranjang via API
 function addToCart(productId) {

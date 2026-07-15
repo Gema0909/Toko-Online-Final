@@ -280,17 +280,16 @@
     justify-content: flex-start; /* Memastikan teks rapi dari atas ke bawah */
 }
 
-/* --- DESAIN KHUSUS DESKRIPSI --- */
+/* --- DESAIN KHUSUS DESKRIPSI SAJA --- */
 .product-desc {
-    font-size: 0.875rem; /* Ukuran font pas, tidak kekecilan */
-    color: #d1d5db; /* Warna abu-abu terang, lebih kontras dan nyaman dibaca */
+    font-size: 0.875rem; 
+    color: #d1d5db; 
     margin-top: 0.5rem;
     margin-bottom: 1rem;
-    line-height: 1.5; /* Jarak antar baris agar teks tidak berdempetan */
+    line-height: 1.5; 
     
-    /* Membatasi teks maksimal 3 baris. Jika lebih, otomatis jadi titik-titik (...) */
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 3; /* Maksimal 3 baris */
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
