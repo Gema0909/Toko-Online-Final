@@ -31,3 +31,26 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 5000); 
     });
 });
+
+// Fungsi untuk memanggil API Hapus Produk (Tambahkan di admin.js)
+function deleteProduct(productId, productName) {
+    // Tampilkan konfirmasi popup sebelum benar-benar menghapus
+    if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
+        fetch(`/api/products/${productId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Refresh halaman untuk memperbarui daftar produk
+            } else {
+                alert("Gagal menghapus produk: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan sistem saat menghapus produk.");
+        });
+    }
+}

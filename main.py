@@ -160,6 +160,35 @@ def add_to_cart():
     except Exception as e:
         print("Error tambah keranjang:", e)
         return jsonify({"success": False, "message": "Gagal memasukkan ke keranjang."}), 500
+    
+# API Hapus Produk berdasarkan ID (Tambahkan di main.py)
+@app.route('/api/products/<int:product_id>', methods=['DELETE'])
+def api_delete_product(product_id):
+    try:
+        # (Opsional) Validasi keamanan: Pastikan hanya admin yang bisa menghapus
+        if 'user' not in session or session['user'].get('role') != 'admin':
+            return jsonify({"success": False, "message": "Akses ditolak! Anda bukan Admin."}), 403
+
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # 1. Pastikan produk memang ada di database
+            cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+            product = cursor.fetchone()
+            
+            if not product:
+                conn.close()
+                return jsonify({"success": False, "message": "Produk tidak ditemukan!"}), 404
+            
+            # 2. Hapus produk dari database
+            cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
+            conn.commit()
+            
+        conn.close()
+        return jsonify({"success": True, "message": f"Produk '{product['name']}' berhasil dihapus!"})
+
+    except Exception as e:
+        print("Error saat menghapus produk:", e)
+        return jsonify({"success": False, "message": f"Gagal menghapus produk: {str(e)}"}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':
