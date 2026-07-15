@@ -303,6 +303,39 @@ def api_add_product():
     except Exception as e:
         print("Error tambah produk:", e)
         return jsonify({"success": False, "message": str(e)}), 500
+    
+# ==========================================
+#       API UNTUK MENGEDIT/UPDATE PRODUK
+# ==========================================
+@app.route('/api/products/<int:product_id>', methods=['PUT'])
+def api_update_product(product_id):
+    # Validasi hak akses Admin
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+        
+    try:
+        # Ambil data JSON dari body request JavaScript
+        data = request.json
+        name = data.get('name')
+        category = data.get('category')
+        price = data.get('price')
+        stock = data.get('stock')
+        description = data.get('description')
+        
+        # Eksekusi Query UPDATE ke Database
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            sql = """UPDATE products 
+                     SET name = %s, category = %s, price = %s, stock = %s, description = %s 
+                     WHERE id = %s"""
+            cursor.execute(sql, (name, category, price, stock, description, product_id))
+            conn.commit()
+        conn.close()
+        
+        return jsonify({"success": True, "message": f"Data produk '{name}' berhasil diperbarui!"})
+    except Exception as e:
+        print("Error update produk:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':

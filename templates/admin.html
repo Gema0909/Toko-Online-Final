@@ -121,6 +121,8 @@
                 <button type="button" class="close-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
             </div>
             <form class="admin-form mt-3">
+                <input type="hidden" id="edit_id">
+
                 <div class="form-group">
                     <label>Nama Barang</label>
                     <input type="text" id="edit_name" required>
@@ -145,7 +147,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeEditModal()">Batal</button>
-                    <button type="button" class="btn-primary" onclick="closeEditModal()">Simpan Perubahan</button>
+                    <button type="button" class="btn-primary" onclick="saveProductEdit()">Simpan Perubahan</button>
                 </div>
             </form>
         </div>

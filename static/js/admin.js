@@ -1,3 +1,6 @@
+// Variabel global untuk menyimpan data produk yang sedang aktif
+let allProducts = [];
+
 // ==========================================
 // 1. MEMUAT DATA STATISTIK (REVENUE & TOTAL)
 // ==========================================
@@ -34,7 +37,6 @@ function loadAdminOrders() {
                 const formatTotal = new Intl.NumberFormat('id-ID').format(order.total_price);
                 const paymentStatusClass = order.payment_status === 'Lunas' ? 'text-green font-bold' : 'text-red font-bold';
                 
-                // Cek status pengiriman pilihan (selected)
                 const sPending = order.status === 'Pending' ? 'selected' : '';
                 const sDiproses = order.status === 'Diproses' ? 'selected' : '';
                 const sDikirim = order.status === 'Dikirim' ? 'selected' : '';
@@ -94,7 +96,7 @@ function updateOrderStatus(orderId) {
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        loadAdminOrders(); // Segarkan daftar antrean pesanan
+        loadAdminOrders();
     })
     .catch(err => {
         console.error("Gagal merubah status pesanan:", err);
@@ -111,6 +113,7 @@ function loadAdminProducts() {
     fetch('/api/products')
         .then(response => response.json())
         .then(data => {
+            allProducts = data; // Simpan ke variabel global
             tableBody.innerHTML = '';
 
             if (data.length === 0) {
@@ -120,7 +123,6 @@ function loadAdminProducts() {
 
             data.forEach(product => {
                 const formatHarga = new Intl.NumberFormat('id-ID').format(product.price);
-                const desc = product.description ? product.description : '';
                 const category = product.category ? product.category : '-';
 
                 const row = document.createElement('tr');
@@ -130,7 +132,7 @@ function loadAdminProducts() {
                     <td class="text-right text-green font-bold">${formatHarga}</td>
                     <td class="text-center">${product.stock}</td>
                     <td class="text-center action-btns">
-                        <button class="btn-icon text-blue" onclick="openEditModal('${product.name}', '${category}', '${product.price}', '${product.stock}', '${desc}')">
+                        <button class="btn-icon text-blue" onclick="openEditModal(${product.id})">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn-icon text-red" onclick="deleteProduct(${product.id}, '${product.name}')">
@@ -148,7 +150,77 @@ function loadAdminProducts() {
 }
 
 // ==========================================
-// 5. MENGHAPUS PRODUK DARI DATABASE
+// 5. MEMBUKA MODAL EDIT & COCOKKAN DATA
+// ==========================================
+function openEditModal(productId) {
+    // Cari data produk di dalam array allProducts berdasarkan ID-nya
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    // Isi formulir modal dengan data asli dari database
+    document.getElementById('edit_id').value = product.id;
+    document.getElementById('edit_name').value = product.name;
+    document.getElementById('edit_category').value = product.category || '';
+    document.getElementById('edit_price').value = product.price;
+    document.getElementById('edit_stock').value = product.stock;
+    document.getElementById('edit_description').value = product.description || '';
+
+    // Tampilkan modal ke layar
+    document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+// ==========================================
+// 6. MENYIMPAN PERUBAHAN EDIT KE DATABASE (API CALL)
+// ==========================================
+function saveProductEdit() {
+    const id = document.getElementById('edit_id').value;
+    const name = document.getElementById('edit_name').value;
+    const category = document.getElementById('edit_category').value;
+    const price = document.getElementById('edit_price').value;
+    const stock = document.getElementById('edit_stock').value;
+    const description = document.getElementById('edit_description').value;
+
+    if (!name || !price || !stock) {
+        alert("Nama, Harga, dan Stok wajib diisi!");
+        return;
+    }
+
+    // Mengirim data perubahan menggunakan metode PUT
+    fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name,
+            category: category,
+            price: price,
+            stock: stock,
+            description: description
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            closeEditModal();      // Tutup modal edit
+            loadAdminProducts();   // Segarkan isi tabel katalog admin
+        } else {
+            alert("Gagal memperbarui produk: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Terjadi kesalahan sistem saat memperbarui produk.");
+    });
+}
+
+// ==========================================
+// 7. MENGHAPUS PRODUK DARI DATABASE
 // ==========================================
 function deleteProduct(productId, productName) {
     if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
@@ -157,7 +229,7 @@ function deleteProduct(productId, productName) {
         .then(data => {
             if (data.success) {
                 alert(data.message);
-                loadAdminProducts(); // Muat ulang tabel katalog produk
+                loadAdminProducts();
             } else {
                 alert("Gagal menghapus produk: " + data.message);
             }
@@ -169,47 +241,20 @@ function deleteProduct(productId, productName) {
     }
 }
 
-// Fungsi Bantuan Modal Edit Dummy (Sesuai kebutuhan kerangka)
-function openEditModal(name, cat, price, stock, desc) {
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_category').value = cat;
-    document.getElementById('edit_price').value = price;
-    document.getElementById('edit_stock').value = stock;
-    document.getElementById('edit_description').value = desc;
-    document.getElementById('editModal').classList.remove('hidden');
-}
-function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
-}
-
 // ==========================================
-// 6. JALANKAN LOGIKA SAAT HALAMAN SELESAI DI-LOAD
+// 8. LOGIKA PENANGANAN FORM TAMBAH PRODUK & INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadAdminStats();
     loadAdminOrders();
     loadAdminProducts();
-});
 
-// ==========================================
-// FUNGSI UNTUK MENAMBAH PRODUK BARU KE DATABASE
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Jalankan fungsi load yang sudah ada sebelumnya
-    loadAdminStats();
-    loadAdminOrders();
-    loadAdminProducts();
-
-    // Logika handling Form Tambah Produk
     const addProductForm = document.getElementById('add-product-form');
     if (addProductForm) {
         addProductForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah halaman reload otomatis
-            
-            // Ambil seluruh data dari form input (termasuk file gambar)
+            e.preventDefault();
             const formData = new FormData(this);
             
-            // Kirim data ke API backend Python
             fetch('/api/products', {
                 method: 'POST',
                 body: formData
@@ -218,8 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    this.reset();          // Kosongkan kembali isi form formulir
-                    loadAdminProducts();   // Segarkan tabel katalog agar produk baru langsung muncul
+                    this.reset();
+                    loadAdminProducts();
                 } else {
                     alert("Gagal memajang produk: " + data.message);
                 }
