@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gema Store - Keranjang Belanja</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/cart.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/cart.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar">
@@ -18,7 +19,7 @@
                 <a href="/" class="nav-link"><i class="fas fa-store"></i> Produk</a>
                 <a href="/cart" class="nav-link cart-link">
                     <i class="fas fa-shopping-cart"></i> Keranjang
-                    <span class="cart-badge">2</span>
+                    <span class="cart-badge">0</span>
                 </a>
                 <a href="/orders" class="nav-link"><i class="fas fa-receipt"></i> Pesanan Saya</a>
                 <a href="/login" class="nav-link text-red logout-btn"><i class="fas fa-sign-out-alt"></i></a>
@@ -52,7 +53,7 @@
                     <p>Total Harga: <span id="cart-total-price">Rp 0</span></p>
                 </div>
 
-                <form id="checkoutForm" class="checkout-form">
+                <form id="checkoutForm" class="checkout-form" enctype="multipart/form-data">
                     <div class="form-group">
                         <label>Alamat Pengiriman</label>
                         <textarea name="address" required rows="3" placeholder="Masukkan alamat lengkap rumah Anda"></textarea>
@@ -72,7 +73,7 @@
                         <div id="payment_info" class="payment-info hidden">
                             <div id="proof_div" class="form-group mb-2">
                                 <label>Upload Bukti Pembayaran</label>
-                                <input type="file" name="payment_proof" accept=".jpg,.jpeg,.png">
+                                <input type="file" id="payment_proof" name="payment_proof" accept=".jpg,.jpeg,.png">
                             </div>
                             <h4 class="text-green font-bold">Informasi Pembayaran</h4>
                             <p id="payment_text" class="payment-text-desc"></p>
@@ -85,8 +86,7 @@
                 </form>
             </div>
         </div>
-        
-        </main>
+    </main>
 
     <footer class="footer">
         &copy; 2026 Toko Online E-Commerce System. All Rights Reserved.

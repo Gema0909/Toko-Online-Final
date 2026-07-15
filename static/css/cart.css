@@ -225,3 +225,13 @@
     color: #c0392b;
     transform: scale(1.15); /* Membesar sedikit saat di-hover */
 }
+
+/* Sembunyikan panel pembayaran sebelum user memilih opsi */
+.hidden {
+    display: none !important;
+}
+
+/* Memperbaiki jarak font-awesome pada button */
+.btn-checkout i {
+    margin-right: 8px;
+}
