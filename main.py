@@ -49,8 +49,13 @@ def orders_page():
     return render_template('orders.html')
 
 # Halaman Dashboard Admin Kelola Barang
+# Halaman Dashboard Admin Kelola Barang
 @app.route('/admin')
 def admin_page():
+    # Cek apakah user sudah login dan perannya adalah admin
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return redirect('/login') # Jika belum, lempar ke halaman login
+        
     return render_template('admin.html')
 
 
