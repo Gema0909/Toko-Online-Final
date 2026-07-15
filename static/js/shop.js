@@ -17,7 +17,12 @@ document.addEventListener("DOMContentLoaded", function() {
             products.forEach(item => {
                 const productCard = `
                     <div class="product-card">
-                        <img src="/static/uploads/${item.image || 'default.jpg'}" alt="${item.name}" style="width:100%; border-radius:8px;">
+                        <img 
+                            src="/static/uploads/${item.image}" 
+                            onerror="this.onerror=null; this.src='https://placehold.co/400x300/e0e0e0/666666?text=No+Image';" 
+                            alt="${item.name}" 
+                            style="width:100%; border-radius:8px; object-fit: cover; aspect-ratio: 4/3;"
+                        >
                         <h3>${item.name}</h3>
                         <p class="category-tag"><i class="fas fa-tag"></i> ${item.category}</p>
                         <p class="price">Rp ${item.price.toLocaleString('id-ID')}</p>
