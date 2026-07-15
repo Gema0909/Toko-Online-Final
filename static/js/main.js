@@ -164,6 +164,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // A2. Jalankan penarikan pesanan riil untuk halaman Pesanan Saya (Langkah ke-2)
     loadMyOrders();
 
+    // Jalankan update badge keranjang otomatis
+    updateCartBadge();
+
     // B. Menghilangkan Notifikasi/Alert otomatis setelah 5 detik
     const alerts = document.querySelectorAll('.alert, [role="alert"]');
     alerts.forEach(function(alert) {
@@ -211,3 +214,22 @@ document.addEventListener("DOMContentLoaded", function() {
         alert("Proses pendaftaran akun baru berhasil! (Simulasi HTML Statis)");
     });
 });
+
+// Fungsi untuk menghitung dan menampilkan jumlah barang di keranjang belanja
+function updateCartBadge() {
+    const badge = document.getElementById('cart-badge');
+    if (!badge) return;
+
+    // Mengambil data keranjang dari localStorage (tempat penyimpanan keranjang di browser)
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Menghitung total kuantitas barang
+    const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+
+    if (totalItems > 0) {
+        badge.textContent = totalItems;
+        badge.style.display = 'inline-block'; // Tampilkan badge merah jika ada barang
+    } else {
+        badge.style.display = 'none'; // Sembunyikan jika keranjang kosong
+    }
+}
