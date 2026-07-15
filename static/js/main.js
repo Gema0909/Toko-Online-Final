@@ -165,17 +165,23 @@ function loadMyOrders() {
 // =========================================================================
 document.addEventListener("DOMContentLoaded", function() {
     
-    // A. Jalankan penarikan produk untuk halaman toko
-    loadShopProducts();
+    // 1. JALANKAN INI DI URUTAN PERTAMA (Biar tidak terhalang error fungsi bawahnya)
+    aturNavigasiOtomatis();
 
-    // A2. Jalankan penarikan pesanan riil untuk halaman Pesanan Saya (Langkah ke-2)
-    loadMyOrders();
+    // A. Jalankan penarikan produk untuk halaman toko
+    if (typeof loadShopProducts === 'function') {
+        try { loadShopProducts(); } catch (e) { console.log("Bukan halaman toko, skip."); }
+    }
+
+    // A2. Jalankan penarikan pesanan riil untuk halaman Pesanan Saya
+    if (typeof loadMyOrders === 'function') {
+        try { loadMyOrders(); } catch (e) { console.log("Bukan halaman pesanan, skip."); }
+    }
 
     // Jalankan update badge keranjang otomatis
-    updateCartBadge();
-
-    // Navigasi otomatis admin/user
-    aturNavigasiOtomatis();
+    if (typeof updateCartBadge === 'function') {
+        try { updateCartBadge(); } catch (e) { console.log("Badge keranjang skip."); }
+    }
 
     // B. Menghilangkan Notifikasi/Alert otomatis setelah 5 detik
     const alerts = document.querySelectorAll('.alert, [role="alert"]');
@@ -244,49 +250,44 @@ function updateCartBadge() {
     }
 }
 
-// =========================================================================
-// TARUH KODE INI DI BARIS PALING BAWAH FILE main.js KAMU
-// =========================================================================
 function aturNavigasiOtomatis() {
-    // Membidik target container menu sesuai class di HTML
+    // Membidik target container menu sesuai class di HTML Anda
     const navLinksContainer = document.querySelector('.nav-links');
     if (!navLinksContainer) return;
 
-    // Cek apakah URL browser saat ini sedang membuka halaman admin
-    if (window.location.pathname.startsWith('/admin')) {
+    // Cek apakah URL browser saat ini mengandung kata 'admin'
+    if (window.location.pathname.toLowerCase().includes('admin')) {
         
-        // Tampilkan menu khusus admin
+        // =========================================================================
+        // TAMPILKAN MENU KHUSUS ADMIN (Sudah diarahkan ke admin.html)
+        // =========================================================================
         navLinksContainer.innerHTML = `
             <span class="nav-greeting">Hi, Admin</span>
             
-            <a href="/admin/dashboard" class="nav-link">
+            <a href="admin.html" class="nav-link">
                 <i class="fas fa-chart-line"></i> Dashboard
             </a>
             
-            <a href="/admin/products" class="nav-link text-blue">
+            <a href="admin.html" class="nav-link text-blue">
                 <i class="fas fa-boxes"></i> Kelola Produk
             </a>
             
-            <a href="/admin/orders" class="nav-link text-purple">
+            <a href="admin.html" class="nav-link text-purple">
                 <i class="fas fa-history"></i> Pesanan Masuk
             </a>
             
-            <a href="/logout" class="nav-link text-red logout-btn">
+            <a href="login.html" class="nav-link text-red logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         `;
         
     } else {
-        // Tampilkan menu user biasa (menggunakan isi bawaan HTML asli kamu)
-        // Kita cuma kasih ID tambahan ke badge merah keranjang agar sistem belanja berfungsi
+        // =========================================================================
+        // UNTUK HALAMAN USER BIASA
+        // =========================================================================
         const badge = navLinksContainer.querySelector('.cart-badge');
         if (badge) {
             badge.setAttribute('id', 'cart-badge');
-            
-            // Jalankan update badge otomatis jika fungsinya tersedia
-            if (typeof updateCartBadge === 'function') {
-                updateCartBadge();
-            }
         }
     }
 }
