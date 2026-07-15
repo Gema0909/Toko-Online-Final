@@ -256,6 +256,53 @@ def api_update_order_status(order_id):
         return jsonify({"success": True, "message": "Status pesanan berhasil diperbarui!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+    
+# ==========================================
+#       API UNTUK MENAMBAH PRODUK BARU
+# ==========================================
+@app.route('/api/products', methods=['POST'])
+def api_add_product():
+    # Pastikan hanya admin yang bisa menambah barang
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+        
+    try:
+        # 1. Ambil data teks dari form
+        name = request.form.get('name')
+        category = request.form.get('category')
+        price = request.form.get('price')
+        stock = request.form.get('stock')
+        description = request.form.get('description')
+        
+        # 2. Proses upload file gambar (jika ada)
+        image_file = request.files.get('image')
+        image_url = "" # default jika tidak upload foto
+        
+        if image_file and image_file.filename != '':
+            # Buat folder static/uploads jika belum ada
+            upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+                
+            # Simpan file asli ke folder
+            filename = image_file.filename
+            image_file.save(os.path.join(upload_folder, filename))
+            image_url = f"/static/uploads/{filename}"
+
+        # 3. Masukkan data ke Database MySQL
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            sql = """INSERT INTO products (name, category, price, stock, description, image) 
+                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (name, category, price, stock, description, image_url))
+            conn.commit()
+        conn.close()
+        
+        return jsonify({"success": True, "message": f"Produk '{name}' berhasil dipajang ke toko!"})
+        
+    except Exception as e:
+        print("Error tambah produk:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':

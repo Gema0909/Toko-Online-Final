@@ -80,34 +80,34 @@
             <div class="col-right">
                 <div class="card form-card">
                     <h3 class="card-title"><i class="fas fa-plus-circle text-green"></i> Tambah Produk</h3>
-                    <form class="admin-form">
+                    <form id="add-product-form" class="admin-form">
                         <div class="form-group">
                             <label>Nama Barang</label>
-                            <input type="text" required>
+                            <input type="text" id="prod-name" name="name" required>
                         </div>
                         <div class="form-group">
                             <label>Kategori</label>
-                            <input type="text" placeholder="Contoh: Pakaian" required>
+                            <input type="text" id="prod-category" name="category" placeholder="Contoh: Pakaian" required>
                         </div>
                         <div class="form-row">
                             <div class="form-group w-50">
                                 <label>Harga (Rp)</label>
-                                <input type="number" required>
+                                <input type="number" id="prod-price" name="price" required>
                             </div>
                             <div class="form-group w-50">
                                 <label>Stok Awal</label>
-                                <input type="number" required>
+                                <input type="number" id="prod-stock" name="stock" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Deskripsi Produk</label>
-                            <textarea rows="4" placeholder="Detail spesifikasi..."></textarea>
+                            <textarea id="prod-desc" name="description" rows="4" placeholder="Detail spesifikasi..."></textarea>
                         </div>
                         <div class="form-group">
                             <label>Gambar Produk</label>
-                            <input type="file" accept="image/*">
+                            <input type="file" id="prod-image" name="image" accept="image/*">
                         </div>
-                        <button type="button" class="btn-primary mt-2">Pajang Produk Baru</button>
+                        <button type="submit" class="btn-primary mt-2">Pajang Produk Baru</button>
                     </form>
                 </div>
             </div>

@@ -190,3 +190,44 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAdminOrders();
     loadAdminProducts();
 });
+
+// ==========================================
+// FUNGSI UNTUK MENAMBAH PRODUK BARU KE DATABASE
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Jalankan fungsi load yang sudah ada sebelumnya
+    loadAdminStats();
+    loadAdminOrders();
+    loadAdminProducts();
+
+    // Logika handling Form Tambah Produk
+    const addProductForm = document.getElementById('add-product-form');
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah halaman reload otomatis
+            
+            // Ambil seluruh data dari form input (termasuk file gambar)
+            const formData = new FormData(this);
+            
+            // Kirim data ke API backend Python
+            fetch('/api/products', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    this.reset();          // Kosongkan kembali isi form formulir
+                    loadAdminProducts();   // Segarkan tabel katalog agar produk baru langsung muncul
+                } else {
+                    alert("Gagal memajang produk: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Terjadi kesalahan sistem saat menambah produk.");
+            });
+        });
+    }
+});
