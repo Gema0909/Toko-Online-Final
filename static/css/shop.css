@@ -304,8 +304,40 @@
     color: #34d399; /* Warna hijau emerald */
 }
 
-/* Memastikan tombol tambah selalu nempel di ujung paling bawah kartu */
+/* --- DESAIN TOMBOL TAMBAH KERANJANG YANG BARU --- */
 .btn-add-cart {
-    margin-top: 15px !important; 
     width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #10b981, #059669); /* Gradasi hijau elegan */
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); /* Bayangan hijau bercahaya */
+    transition: all 0.3s ease; /* Transisi halus untuk semua efek */
+    margin-top: 15px; /* Menjaga jarak aman dari teks stok */
+}
+
+/* Efek saat kursor diarahkan ke tombol (Hover) */
+.btn-add-cart:hover {
+    background: linear-gradient(135deg, #34d399, #10b981); /* Warna berubah lebih terang */
+    transform: translateY(-3px); /* Tombol seolah-olah terangkat ke atas */
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5); /* Bayangan membesar */
+}
+
+/* Efek saat tombol diklik (Active) */
+.btn-add-cart:active {
+    transform: translateY(1px); /* Tombol terasa ditekan ke dalam */
+    box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+}
+
+/* Memperbesar sedikit ukuran ikon keranjang */
+.btn-add-cart i {
+    font-size: 1.2rem;
 }

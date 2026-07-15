@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <p class="stock" style="margin: 0 0 15px 0; font-size: 0.85rem; color: #9ca3af;">
                                     Stok: ${item.stock}
                                 </p>
-                                <button class="btn-add-cart" onclick="addToCart(${item.id})" style="width: 100%;">
-                                    <i class="fas fa-cart-plus"></i> Tambah
+                                <button class="btn-add-cart" onclick="addToCart(${item.id})">
+                                    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
                                 </button>
                             </div>
                             
