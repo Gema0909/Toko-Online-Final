@@ -44,12 +44,125 @@ function loadShopProducts() {
 }
 
 // =========================================================================
-// 2. LOGIKA UTOMATIS SAAT HALAMAN SELESAI DIMUAT (DOM CONTENT LOADED)
+// 1B. FUNGSI RIWAYAT PESANAN (LANGKAH KE-2: UNTUK HALAMAN PESANAN SAYA)
+// =========================================================================
+function loadMyOrders() {
+    const ordersGrid = document.getElementById('tempat-pesanan');
+    if (!ordersGrid) return; // Keluar jika bukan di halaman orders.html
+
+    // Mengambil data pesanan riil dari API backend Python Anda
+    fetch('/api/my-orders') 
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal memuat data dari server.");
+            return response.json();
+        })
+        .then(data => {
+            ordersGrid.innerHTML = ''; // Bersihkan loader dummy
+
+            if (data.length === 0) {
+                ordersGrid.innerHTML = `
+                    <div class="no-orders" style="text-align: center; padding: 40px; color: #888;">
+                        <i class="fas fa-receipt" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                        <p>Anda belum pernah melakukan pemesanan.</p>
+                    </div>`;
+                return;
+            }
+
+            data.forEach(order => {
+                const formatHarga = (angka) => new Intl.NumberFormat('id-ID').format(angka);
+                
+                // Urus status badge (Diproses, Selesai, Pending)
+                let statusClass = 'badge-pending';
+                const statusStr = (order.status || 'Pending').toLowerCase();
+                if (statusStr === 'diproses' || statusStr === 'processing') statusClass = 'badge-processing';
+                if (statusStr === 'selesai' || statusStr === 'completed') statusClass = 'badge-completed';
+
+                // Urus status pembayaran badge
+                let payStatusClass = 'badge-pending';
+                const payStatusStr = (order.payment_status || 'Pending').toLowerCase();
+                if (payStatusStr === 'lunas' || payStatusStr === 'paid') payStatusClass = 'badge-completed';
+
+                // Render list item produk di dalam pesanan tersebut
+                let itemsHtml = '';
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        itemsHtml += `
+                            <div class="item-row">
+                                <span>${item.product_name} <span class="item-qty">(${item.quantity}x)</span></span>
+                                <span>Rp ${formatHarga(item.price)}</span>
+                            </div>`;
+                    });
+                } else {
+                    // Fallback jika backend mengirim struktur data datar/single-item
+                    itemsHtml = `
+                        <div class="item-row">
+                            <span>${order.product_name || 'Produk'} <span class="item-qty">(${order.quantity || 1}x)</span></span>
+                            <span>Rp ${formatHarga(order.price || order.total_price)}</span>
+                        </div>`;
+                }
+
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                orderCard.innerHTML = `
+                    <div class="order-card-header">
+                        <div>
+                            <span class="order-id">ID PESANAN: #${order.id}</span>
+                            <p class="order-date">${order.created_at || order.date || 'Tanggal N/A'}</p>
+                        </div>
+                        <div>
+                            <span class="badge ${statusClass}">${order.status}</span>
+                        </div>
+                    </div>
+
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+
+                    <div class="order-meta-grid">
+                        <div class="meta-details">
+                            <span class="meta-label">Alamat Kirim</span>
+                            <p class="meta-value">${order.shipping_address || order.address || 'Alamat belum diisi'}</p>
+                            
+                            <span class="meta-label">Metode Pembayaran</span>
+                            <p class="meta-value">${order.payment_method || 'Transfer'}</p>
+                            
+                            <span class="meta-label">Status Pembayaran</span>
+                            <p class="mb-2"><span class="badge ${payStatusClass}">${order.payment_status}</span></p>
+
+                            ${order.payment_proof ? `
+                            <div class="proof-section">
+                                <span class="meta-label">Bukti Pembayaran</span>
+                                <a href="/static/uploads/${order.payment_proof}" target="_blank" class="proof-link">
+                                    <i class="fas fa-image"></i> Lihat Bukti Pembayaran
+                                </a>
+                            </div>` : ''}
+                        </div>
+                        
+                        <div class="order-total-section">
+                            <span class="meta-label">Total Bayar:</span>
+                            <p class="total-price">Rp ${formatHarga(order.total_price || order.total)}</p>
+                        </div>
+                    </div>
+                `;
+                ordersGrid.appendChild(orderCard);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading my orders:', error);
+            ordersGrid.innerHTML = `<p class="loading-text" style="color: red;">Gagal mengambil data riwayat pesanan Anda.</p>`;
+        });
+}
+
+// =========================================================================
+// 2. LOGIKA OTOMATIS SAAT HALAMAN SELESAI DIMUAT (DOM CONTENT LOADED)
 // =========================================================================
 document.addEventListener("DOMContentLoaded", function() {
     
     // A. Jalankan penarikan produk untuk halaman toko
     loadShopProducts();
+
+    // A2. Jalankan penarikan pesanan riil untuk halaman Pesanan Saya (Langkah ke-2)
+    loadMyOrders();
 
     // B. Menghilangkan Notifikasi/Alert otomatis setelah 5 detik
     const alerts = document.querySelectorAll('.alert, [role="alert"]');

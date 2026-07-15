@@ -32,93 +32,9 @@
             <h2><i class="fas fa-receipt text-purple"></i> Pesanan Saya</h2>
             <p>Pantau status pengiriman paket pesanan fisik Anda di bawah ini.</p>
         </div>
-
-        <div class="orders-list">
-            
-            <div class="order-card">
-                <div class="order-card-header">
-                    <div>
-                        <span class="order-id">ID PESANAN: #10024</span>
-                        <p class="order-date">15 Juli 2026 14:30</p>
-                    </div>
-                    <div>
-                        <span class="badge badge-processing">Diproses</span>
-                    </div>
-                </div>
-
-                <div class="order-items">
-                    <div class="item-row">
-                        <span>Kemeja Flanel Lengan Panjang <span class="item-qty">(1x)</span></span>
-                        <span>Rp 150.000</span>
-                    </div>
-                    <div class="item-row">
-                        <span>Topi Baseball Hitam <span class="item-qty">(2x)</span></span>
-                        <span>Rp 100.000</span>
-                    </div>
-                </div>
-
-                <div class="order-meta-grid">
-                    <div class="meta-details">
-                        <span class="meta-label">Alamat Kirim</span>
-                        <p class="meta-value"></p>
-                        
-                        <span class="meta-label">Metode Pembayaran</span>
-                        <p class="meta-value">Transfer BCA</p>
-                        
-                        <span class="meta-label">Status Pembayaran</span>
-                        <p class="mb-2"><span class="badge badge-completed">Lunas</span></p>
-
-                        <div class="proof-section">
-                            <span class="meta-label">Bukti Pembayaran</span>
-                            <a href="#" class="proof-link"><i class="fas fa-image"></i> Lihat Bukti Pembayaran</a>
-                        </div>
-                    </div>
-                    
-                    <div class="order-total-section">
-                        <span class="meta-label">Total Bayar:</span>
-                        <p class="total-price">Rp 250.000</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="order-card">
-                <div class="order-card-header">
-                    <div>
-                        <span class="order-id">ID PESANAN: #10025</span>
-                        <p class="order-date">16 Juli 2026 09:15</p>
-                    </div>
-                    <div>
-                        <span class="badge badge-pending">Pending</span>
-                    </div>
-                </div>
-
-                <div class="order-items">
-                    <div class="item-row">
-                        <span>Sepatu Sneakers Putih <span class="item-qty">(1x)</span></span>
-                        <span>Rp 300.000</span>
-                    </div>
-                </div>
-
-                <div class="order-meta-grid">
-                    <div class="meta-details">
-                        <span class="meta-label">Alamat Kirim</span>
-                        <p class="meta-value">Jl. Sudirman Komplek A1, Bandung</p>
-                        
-                        <span class="meta-label">Metode Pembayaran</span>
-                        <p class="meta-value">QRIS</p>
-                        
-                        <span class="meta-label">Status Pembayaran</span>
-                        <p class="mb-2"><span class="badge badge-pending">Menunggu Verifikasi</span></p>
-                    </div>
-                    
-                    <div class="order-total-section">
-                        <span class="meta-label">Total Bayar:</span>
-                        <p class="total-price">Rp 300.000</p>
-                    </div>
-                </div>
-            </div>
-
-            </div>
+        <div class="orders-list" id="tempat-pesanan">
+            <p class="loading-text">Sedang memuat riwayat pesanan Anda...</p>
+        </div>
     </main>
 
     <footer class="footer">
