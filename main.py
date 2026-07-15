@@ -365,6 +365,52 @@ def get_my_orders():
     except Exception as e:
         print("Ada error di database orders:", e)
         return jsonify([]) # Tetap kembalikan array kosong sebagai penyelamat
+    
+# ==========================================
+#    ROUTE UNTUK MENAMBAH PRODUK (HTML FORM)
+# ==========================================
+@app.route('/admin/add_product', methods=['POST'])
+def admin_add_product_form():
+    # Pastikan hanya admin yang bisa menambah barang
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return redirect('/login')
+        
+    try:
+        # 1. Ambil data teks dari form
+        name = request.form.get('name')
+        category = request.form.get('category')
+        price = request.form.get('price')
+        stock = request.form.get('stock')
+        description = request.form.get('description')
+        
+        # 2. PROSES UPLOAD FILE GAMBAR
+        image_file = request.files.get('image')
+        image_url = "" # default jika tidak ada gambar
+        
+        if image_file and image_file.filename != '':
+            upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+                
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(upload_folder, filename))
+            image_url = f"/static/uploads/{filename}"
+
+        # 3. Masukkan data ke Database MySQL
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            sql = """INSERT INTO products (name, category, price, stock, description, image) 
+                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (name, category, price, stock, description, image_url))
+            conn.commit()
+        conn.close()
+        
+        # Setelah sukses, arahkan kembali ke halaman dashboard admin
+        return redirect('/admin')
+        
+    except Exception as e:
+        print("Error tambah produk:", e)
+        return f"Terjadi kesalahan saat menambah produk: {str(e)}", 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':
