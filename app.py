@@ -1,30 +1,64 @@
 import os
-from flask import Flask, jsonify, render_template
-from flask_cors import CORS
 import pymysql
+from flask import Flask, render_template, request, jsonify, redirect, session
 
+# 1. Inisialisasi Aplikasi Flask & Kunci Sesi
 app = Flask(__name__)
-CORS(app)
+app.secret_key = os.environ.get('SECRET_KEY', 'rahasia_super_aman_123')
 
-# Fungsi koneksi database MySQL Railway
+# 2. Fungsi Koneksi Database (Otomatis Mendukung Lokal & Railway)
 def get_db_connection():
     return pymysql.connect(
         host=os.environ.get('MYSQLHOST', 'localhost'),
         user=os.environ.get('MYSQLUSER', 'root'),
         password=os.environ.get('MYSQLPASSWORD', ''),
-        database=os.environ.get('MYSQLDATABASE', 'test'),
+        database=os.environ.get('MYSQLDATABASE', 'toko_online'),
         port=int(os.environ.get('MYSQLPORT', 3306)),
         cursorclass=pymysql.cursors.DictCursor
     )
 
-# =========================================================
-# 1. API ENDPOINT (DATABASE)
-# *Wajib ditaruh di atas agar tidak bertabrakan dengan halaman web*
-# =========================================================
+# ==========================================
+#          ROUTE HALAMAN UTAMA (HTML)
+# ==========================================
 
-# Mengambil data produk dari MySQL
-@app.route('/api/products', methods=['GET'])
-def get_products():
+# Halaman Katalog Produk (Shop)
+@app.route('/')
+def index():
+    return render_template('shop.html')
+
+# Halaman Login
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
+
+# Halaman Register
+@app.route('/register')
+def register_page():
+    return render_template('register.html')
+
+# Halaman Keranjang Belanja
+@app.route('/cart')
+def cart_page():
+    return render_template('cart.html')
+
+# Halaman Pesanan Saya
+@app.route('/orders')
+def orders_page():
+    return render_template('orders.html')
+
+# Halaman Dashboard Admin Kelola Barang
+@app.route('/admin')
+def admin_page():
+    return render_template('admin.html')
+
+
+# ==========================================
+#          ROUTE API SISTEM (JSON)
+# ==========================================
+
+# API Ambil Data Produk dari Database (Dipanggil oleh shop.js)
+@app.route('/api/products')
+def api_products():
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
@@ -33,39 +67,10 @@ def get_products():
         conn.close()
         return jsonify(products)
     except Exception as e:
-        print("Error database:", e)
-        return jsonify({"error": str(e)}), 500
+        print("Error get products:", e)
+        return jsonify([])
 
-
-# =========================================================
-# 2. RUTE UNTUK MENAMPILKAN HALAMAN WEB (HTML)
-# =========================================================
-
-# Halaman Utama / Beranda (shop.html)
-@app.route('/')
-def home():
-    return render_template('shop.html')
-
-# 🔥 RUTE OTOMATIS SAKTI 🔥
-# Kode ini akan otomatis membaca semua file HTML di folder 'templates' kamu!
-@app.route('/<path:page_name>')
-def render_any_page(page_name):
-    # Jika di browser diketik pakai akhiran '.html' (misal: login.html), kita bersihkan dulu
-    if page_name.endswith('.html'):
-        page_name = page_name[:-5]
-        
-    try:
-        # Flask akan otomatis mencari '[nama_halaman].html' di folder templates
-        return render_template(f'{page_name}.html')
-    except Exception:
-        # Jika file HTML-nya memang tidak ada di folder templates
-        return f"Error 404: File '{page_name}.html' tidak ditemukan di dalam folder 'templates' kamu. Periksa kembali ejaan namanya!", 404
-
-from flask import request, session # Pastikan 'request' sudah di-import di bagian paling atas app.py
-
-# =========================================================
-# API ENDPOINT UNTUK PROSES LOGIN NYATA
-# =========================================================
+# API Login dengan Deteksi Peran/Role (Admin vs User)
 @app.route('/api/login', methods=['POST'])
 def api_login():
     try:
@@ -78,29 +83,32 @@ def api_login():
             
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            # PENTING: Kode ini mencari username & password di tabel 'users' milikmu.
-            # (Jika nama tabelmu 'admin' atau 'members', ganti kata 'users' di bawah ini)
             cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
             user = cursor.fetchone()
         conn.close()
         
         if user:
-            # Login Berhasil!
+            # Deteksi Role Pelanggan atau Admin
+            user_role = user.get('role', 'user')
+            if username.lower() == 'admin':
+                user_role = 'admin'
+
             return jsonify({
                 "success": True, 
                 "message": "Login sukses!",
                 "user": {
-                    "username": user['username']
+                    "username": user['username'],
+                    "role": user_role
                 }
             })
         else:
-            # Login Gagal
             return jsonify({"success": False, "message": "Username atau Password salah!"}), 401
             
     except Exception as e:
         print("Error sistem login:", e)
         return jsonify({"success": False, "message": f"Terjadi kesalahan sistem: {str(e)}"}), 500
-    
+
+
+# Jalankan Server Utama
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

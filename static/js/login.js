@@ -43,11 +43,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (data.success) {
                     alert('Selamat! Login Berhasil.');
+                    
+                    // Simpan data login di browser
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('role', data.user.role); // Simpan status role
                     
-                    // Arahkan ke halaman utama setelah sukses login
-                    window.location.href = '/'; 
+                    // PENGALIHAN PINTAR BERDASARKAN ROLE:
+                    if (data.user.role === 'admin') {
+                        // Jika admin, arahkan ke dashboard kelola barang/admin
+                        window.location.href = '/admin'; 
+                    } else {
+                        // Jika user biasa, arahkan ke halaman katalog toko
+                        window.location.href = '/'; 
+                    }
                 } else {
                     alert(data.message || 'Login Gagal!');
                 }
