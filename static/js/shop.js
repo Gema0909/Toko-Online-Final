@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const productCard = `
                     <div class="product-card">
                         <img 
-                            src="/static/uploads/${item.image}" 
+                            src="/static/img/${item.image}" 
                             onerror="this.onerror=null; this.src='https://placehold.co/400x300/e0e0e0/666666?text=No+Image';" 
                             alt="${item.name}" 
                             style="width:100%; border-radius:8px; object-fit: cover; aspect-ratio: 4/3;"
