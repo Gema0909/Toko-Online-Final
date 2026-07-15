@@ -383,3 +383,39 @@
     padding-top: 1rem; 
     border-top: 1px solid var(--border-color); 
 }
+
+/* --- TEMA GELAP UNTUK FORM TAMBAH PRODUK --- */
+.form-card {
+    background-color: #1f2937; /* Warna latar gelap senada dengan dashboard */
+    border: 1px solid #374151;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: #ffffff;
+}
+
+.admin-form .form-group label {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Desain kolom input */
+.admin-form input, 
+.admin-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #111827; /* Input dibuat lebih gelap dari latar belakang */
+    border: 1px solid #374151;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+/* Efek menyala (glowing) saat input diklik */
+.admin-form input:focus, 
+.admin-form textarea:focus {
+    outline: none;
+    border-color: #10b981; 
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}

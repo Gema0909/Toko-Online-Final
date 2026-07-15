@@ -80,7 +80,8 @@
             <div class="col-right">
                 <div class="card form-card">
                     <h3 class="card-title"><i class="fas fa-plus-circle text-green"></i> Tambah Produk</h3>
-                    <form id="add-product-form" class="admin-form" action="/api/products" method="POST" enctype="multipart/form-data"></form>
+                    
+                    <form id="add-product-form" class="admin-form" action="/admin/add_product" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>Nama Barang</label>
                             <input type="text" id="prod-name" name="name" required>
@@ -110,6 +111,7 @@
                         <button type="submit" class="btn-primary mt-2">Pajang Produk Baru</button>
                     </form>
                 </div>
+            </div>
             </div>
         </div>
     </main>
