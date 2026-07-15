@@ -1,6 +1,7 @@
 import os
 import pymysql
 from flask import Flask, render_template, request, jsonify, redirect, session
+import mysql.connector
 
 # 1. Inisialisasi Aplikasi Flask & Kunci Sesi
 app = Flask(__name__)
