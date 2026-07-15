@@ -431,23 +431,6 @@ table {
     margin-top: 1rem;
 }
 
-/* Jarak dan batas pada judul (th) dan isi (td) */
-table th, 
-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #374151; /* Warna garis batas yang redup */
-    color: #e5e7eb;
-}
-
-/* Judul Kolom (Atas) */
-table th {
-    background-color: #111827; /* Warna gelap untuk bagian kepala tabel */
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    color: #9ca3af;
-}
-
 /* PERBAIKAN SEJAJAR (ALIGNMENT) */
 /* Kolom Nama & Kategori dibuat rata kiri */
 table th:nth-child(1), table td:nth-child(1),
