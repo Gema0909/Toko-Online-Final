@@ -94,11 +94,16 @@ def api_login():
             user = cursor.fetchone()
         conn.close()
         
+        # ... kode pencarian user di database tetap sama ...
         if user:
-            # Deteksi Role Pelanggan atau Admin
             user_role = user.get('role', 'user')
             if username.lower() == 'admin':
                 user_role = 'admin'
+
+            # --- TAMBAHKAN DUA BARIS INI (Untuk menyimpan sesi login) ---
+            session['user'] = {"username": user['username'], "role": user_role}
+            session['cart'] = [] # Menginisialisasi keranjang belanja
+            # -------------------------------------------------------------
 
             return jsonify({
                 "success": True, 

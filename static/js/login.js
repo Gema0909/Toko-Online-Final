@@ -29,11 +29,19 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(data => {
-                if(data.status === 'success') {
-                    // Jika admin ke dashboard, jika user ke shop
-                    window.location.href = data.role === 'admin' ? '/admin' : '/shop';
+                if (data.success) {
+                    alert(data.message); // Menampilkan "Login sukses!"
+                    
+                    // --- TAMBAHKAN PERINTAH REDIRECT INI ---
+                    if (data.user.role === 'admin') {
+                        window.location.href = '/admin'; // Jika admin, arahkan ke dashboard admin
+                    } else {
+                        window.location.href = '/'; // Jika pelanggan biasa, arahkan ke halaman utama (shop)
+                    }
+                    // ---------------------------------------
+                    
                 } else {
-                    alert(data.message);
+                    alert(data.message); // Menampilkan pesan error jika gagal
                 }
             })
             .catch(err => console.error("Error:", err));
