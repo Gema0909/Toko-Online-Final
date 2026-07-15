@@ -1,6 +1,7 @@
 import os
 import pymysql
 from flask import Flask, render_template, request, jsonify, redirect, session
+from werkzeug.utils import secure_filename
 import mysql.connector
 
 # 1. Inisialisasi Aplikasi Flask & Kunci Sesi
@@ -274,19 +275,25 @@ def api_add_product():
         stock = request.form.get('stock')
         description = request.form.get('description')
         
-        # 2. Proses upload file gambar (jika ada)
+        # ==========================================
+        # 2. PROSES UPLOAD FILE GAMBAR (VERSI AMAN)
+        # ==========================================
         image_file = request.files.get('image')
-        image_url = "" # default jika tidak upload foto
+        image_url = "" # default jika tidak ada gambar
         
         if image_file and image_file.filename != '':
-            # Buat folder static/uploads jika belum ada
+            # Menentukan lokasi folder secara absolut di dalam static/uploads
             upload_folder = os.path.join(app.root_path, 'static', 'uploads')
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
                 
-            # Simpan file asli ke folder
-            filename = image_file.filename
+            # Mengubah spasi/karakter aneh menjadi aman (contoh: "baju koko.jpg" -> "baju_koko.jpg")
+            filename = secure_filename(image_file.filename)
+            
+            # Simpan file asli ke dalam folder proyek
             image_file.save(os.path.join(upload_folder, filename))
+            
+            # Jalur URL yang akan dimasukkan ke kolom database
             image_url = f"/static/uploads/{filename}"
 
         # 3. Masukkan data ke Database MySQL
