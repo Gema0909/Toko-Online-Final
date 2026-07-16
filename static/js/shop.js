@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <p class="stock" style="margin: 0 0 15px 0; font-size: 0.85rem; color: #9ca3af;">
                                     Stok: ${item.stock}
                                 </p>
-                                <button class="btn-add-cart" onclick="addToCart(${item.id})">
+                                <button class="btn-add-cart" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">
                                     <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
                                 </button>
                             </div>
@@ -80,23 +80,26 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Fungsi untuk menambah ke keranjang via API
-function addToCart(productId) {
+function addToCart(productId, productName, productPrice) { // 1. Tambah parameter di sini
     const formData = new FormData();
-    formData.append('product_id', productId);
+    formData.append('id', productId);       // 2. Ubah 'product_id' jadi 'id'
+    formData.append('name', productName);   // 3. Tambah baris ini
+    formData.append('price', productPrice); // 4. Tambah baris ini
 
-    fetch('/api/cart/add', {
+    fetch('/api/cart', {                    // 5. Ubah '/api/cart/add' jadi '/api/cart'
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
-        if(data.status === 'success') {
+        // --- BAGIAN BAWAH INI SAMA PERSIS, TIDAK ADA YANG DIHAPUS ---
+        if(data.status === 'success' || data.success) { // Tambah '|| data.success' untuk jaga-jaga
             alert(data.message);
             // Update angka keranjang secara langsung
             const badge = document.querySelector('.cart-badge');
             if (badge) badge.innerText = data.cart_count;
         } else {
-            alert("Terjadi kesalahan. Silakan login kembali.");
+            alert(data.message || "Terjadi kesalahan. Silakan login kembali.");
             window.location.href = '/login';
         }
     })
