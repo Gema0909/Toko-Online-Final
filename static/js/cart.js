@@ -106,18 +106,26 @@ function setupPaymentMethodListener() {
     const proofDiv = document.getElementById('proof_div');
     const proofInput = document.getElementById('payment_proof');
     const paymentText = document.getElementById('payment_text');
+    const qrisImage = document.getElementById('qris_image'); // Tambahkan penangkap elemen gambar QRIS
 
     if (!paymentMethodSelect || !paymentInfoDiv) return;
 
     paymentMethodSelect.addEventListener('change', function() {
         const method = this.value;
+        
+        // 1. Sembunyikan semua info jika belum ada metode yang dipilih
         if (!method) {
             paymentInfoDiv.classList.add('hidden');
             proofInput.removeAttribute('required');
+            if (qrisImage) qrisImage.classList.add('hidden');
             return;
         }
 
+        // 2. Munculkan kotak info pembayaran
         paymentInfoDiv.classList.remove('hidden');
+        
+        // Sembunyikan gambar QRIS secara default setiap kali ganti pilihan (biar tidak bocor ke menu bank lain)
+        if (qrisImage) qrisImage.classList.add('hidden'); 
 
         if (method === 'COD') {
             proofDiv.classList.add('hidden');
@@ -134,7 +142,9 @@ function setupPaymentMethodListener() {
             } else if (method === 'Mandiri') {
                 paymentText.textContent = "Silakan transfer ke Rekening Mandiri: 157-00-012345-7 a/n Gema Store.";
             } else if (method === 'QRIS') {
-                paymentText.textContent = "Scan kode QRIS resmi Gema Store yang tercetak di meja kasir Anda.";
+                paymentText.textContent = "Silakan scan kode QRIS Gema Store di bawah ini menggunakan aplikasi M-Banking atau e-Wallet Anda:";
+                // Munculkan gambarnya khusus di pilihan QRIS ini!
+                if (qrisImage) qrisImage.classList.remove('hidden'); 
             }
         }
     });
