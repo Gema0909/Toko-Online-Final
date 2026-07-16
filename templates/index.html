@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Online - Beranda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"><i class="fas fa-shopping-bag"></i> Toko Online</a>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/produk" class="nav-link">Produk</a>
+                <a href="#tentang" class="nav-link">Tentang</a>
+                <a href="/login" class="nav-link">Login</a>
+                <a href="/register" class="nav-link btn-daftar">Daftar</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-section hidden-anim">
+        <div class="hero-content">
+            <h1>Selamat Datang di Toko Online</h1>
+            <p>Belanja mudah, cepat, dan aman.</p>
+            <a href="/produk" class="cta-button">Belanja Sekarang</a>
+        </div>
+    </header>
+
+    <main class="produk-terbaru">
+        <h2 class="section-title hidden-anim">🔥 Produk Terbaru</h2>
+        
+        <div class="product-grid">
+            <div class="product-card hidden-anim" style="transition-delay: 100ms;">
+                <div class="product-placeholder">
+                    <i class="fas fa-box-open fa-3x"></i>
+                </div>
+                <h3>Produk 1</h3>
+            </div>
+            
+            <div class="product-card hidden-anim" style="transition-delay: 200ms;">
+                <div class="product-placeholder">
+                    <i class="fas fa-box-open fa-3x"></i>
+                </div>
+                <h3>Produk 2</h3>
+            </div>
+            
+            <div class="product-card hidden-anim" style="transition-delay: 300ms;">
+                <div class="product-placeholder">
+                    <i class="fas fa-box-open fa-3x"></i>
+                </div>
+                <h3>Produk 3</h3>
+            </div>
+        </div>
+    </main>
+
+    <footer id="tentang">
+        <p>&copy; 2026 Toko Online. All rights reserved.</p>
+    </footer>
+
+    <script src="/static/js/index.js"></script>
+</body>
+</html>

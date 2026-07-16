@@ -23,9 +23,14 @@ def get_db_connection():
 #          ROUTE HALAMAN UTAMA (HTML)
 # ==========================================
 
-# Halaman Katalog Produk (Shop)
+# Ini rute untuk halaman utama yang baru kita buat di atas
 @app.route('/')
-def index():
+def home_page():
+    return render_template('index.html')
+
+# Ini rute untuk halaman shop.html kamu yang lama
+@app.route('/produk')
+def produk_page():
     return render_template('shop.html')
 
 # Halaman Login
