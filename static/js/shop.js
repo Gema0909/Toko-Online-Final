@@ -125,7 +125,14 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(response => response.json())
     .then(data => {
         if(data.logged_in) {
-            document.getElementById("nama-user").innerText = "Hi, " + data.username;
+            let namaTampil = data.username;
+            
+            // 💡 JIKA data.username berbentuk paket/object, kita bongkar isinya
+            if (typeof data.username === 'object' && data.username !== null) {
+                namaTampil = data.username.username || data.username.name || "User";
+            }
+            
+            document.getElementById("nama-user").innerText = "Hi, " + namaTampil;
         }
     })
     .catch(err => console.error("Error:", err));
