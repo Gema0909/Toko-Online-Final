@@ -141,6 +141,7 @@ def api_login():
 def add_to_cart():
     try:
         # 1. Pastikan user sudah login
+        # (Pastikan kata kunci 'user' ini sama persis dengan yang kamu buat di rute /login)
         if 'user' not in session:
             return jsonify({"success": False, "message": "Silakan login terlebih dahulu untuk berbelanja!"}), 401
 
