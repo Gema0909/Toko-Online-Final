@@ -319,28 +319,58 @@ def api_add_product():
 # ==========================================
 #       API UNTUK MENGEDIT/UPDATE PRODUK
 # ==========================================
-@app.route('/api/products/<int:product_id>', methods=['PUT'])
+@app.route('/api/products/<int:product_id>', methods=['POST', 'PUT']) # Tambah POST agar bisa baca FormData
 def api_update_product(product_id):
+    import uuid # Di-import di sini untuk membuat nama gambar unik
+
     # Validasi hak akses Admin
     if 'user' not in session or session['user'].get('role') != 'admin':
         return jsonify({"success": False, "message": "Akses ditolak!"}), 403
         
     try:
-        # Ambil data JSON dari body request JavaScript
-        data = request.json
-        name = data.get('name')
-        category = data.get('category')
-        price = data.get('price')
-        stock = data.get('stock')
-        description = data.get('description')
+        # 1. GANTI KE request.form KARENA SEKARANG MENGIRIM GAMBAR (FormData)
+        # Kita pakai ".get" agar tidak error jika fieldnya kosong
+        name = request.form.get('name') or (request.json and request.json.get('name'))
+        category = request.form.get('category') or (request.json and request.json.get('category'))
+        price = request.form.get('price') or (request.json and request.json.get('price'))
+        stock = request.form.get('stock') or (request.json and request.json.get('stock'))
+        description = request.form.get('description') or (request.json and request.json.get('description'))
         
-        # Eksekusi Query UPDATE ke Database
+        # 2. CEK APAKAH ADMIN MENGUPLOAD GAMBAR BARU
+        image_file = request.files.get('image')
+        image_url = None
+        
+        if image_file and image_file.filename != '':
+            # Tentukan lokasi folder
+            upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+                
+            # Buat nama acak (UUID) agar gambar baru tidak bentrok dengan cache browser
+            ext = image_file.filename.rsplit('.', 1)[1].lower() if '.' in image_file.filename else 'jpg'
+            unique_filename = f"{uuid.uuid4().hex}.{ext}"
+            
+            # Simpan fisik gambar ke folder
+            image_file.save(os.path.join(upload_folder, unique_filename))
+            # Siapkan path untuk di database
+            image_url = f"/static/uploads/{unique_filename}"
+
+        # 3. UPDATE DATA KE DATABASE
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            sql = """UPDATE products 
-                     SET name = %s, category = %s, price = %s, stock = %s, description = %s 
-                     WHERE id = %s"""
-            cursor.execute(sql, (name, category, price, stock, description, product_id))
+            if image_url:
+                # Jika ada gambar baru, update SEMUANYA (termasuk kolom image)
+                sql = """UPDATE products 
+                         SET name = %s, category = %s, price = %s, stock = %s, description = %s, image = %s 
+                         WHERE id = %s"""
+                cursor.execute(sql, (name, category, price, stock, description, image_url, product_id))
+            else:
+                # Jika HANYA ganti teks (gambar tidak diubah), JANGAN sentuh kolom image
+                sql = """UPDATE products 
+                         SET name = %s, category = %s, price = %s, stock = %s, description = %s 
+                         WHERE id = %s"""
+                cursor.execute(sql, (name, category, price, stock, description, product_id))
+            
             conn.commit()
         conn.close()
         
