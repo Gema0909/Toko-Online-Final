@@ -235,19 +235,24 @@ function saveProductEdit() {
         return;
     }
 
-    // Mengirim data perubahan menggunakan metode PUT
+    // 1. Bungkus data ke dalam FormData (Mendukung Teks + File)
+    let formData = new FormData();
+    formData.append('name', name);
+    formData.append('category', category);
+    formData.append('price', price);
+    formData.append('stock', stock);
+    formData.append('description', description);
+
+    // 2. Cek dan masukkan file gambar JIKA admin memilih foto baru
+    const imageInput = document.getElementById('edit_image');
+    if (imageInput.files.length > 0) {
+        formData.append('image', imageInput.files[0]);
+    }
+
+    // 3. Mengirim data perubahan menggunakan FormData
     fetch(`/api/products/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: name,
-            category: category,
-            price: price,
-            stock: stock,
-            description: description
-        })
+        method: 'POST', // Ganti menjadi POST agar sejalan dengan update Python kita
+        body: formData  // Kirim formData secara langsung (TIDAK PERLU headers JSON)
     })
     .then(response => response.json())
     .then(data => {
