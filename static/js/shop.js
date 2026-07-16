@@ -95,9 +95,20 @@ function addToCart(productId, productName, productPrice) { // 1. Tambah paramete
         // --- BAGIAN BAWAH INI SAMA PERSIS, TIDAK ADA YANG DIHAPUS ---
         if(data.status === 'success' || data.success) { // Tambah '|| data.success' untuk jaga-jaga
             alert(data.message);
+            
             // Update angka keranjang secara langsung
             const badge = document.querySelector('.cart-badge');
-            if (badge) badge.innerText = data.cart_count;
+            if (badge) {
+                // 👇 PENYESUAIAN AMAN:
+                // Jika backend mengirim data jumlah keranjang, kita pakai itu.
+                // Jika tidak mengirim (seperti di main.py kamu), kita tambah 1 angka secara manual di layar.
+                if (data.cart_count !== undefined) {
+                    badge.innerText = data.cart_count;
+                } else {
+                    let angkaSekarang = parseInt(badge.innerText) || 0;
+                    badge.innerText = angkaSekarang + 1;
+                }
+            }
         } else {
             alert(data.message || "Terjadi kesalahan. Silakan login kembali.");
             window.location.href = '/login';
