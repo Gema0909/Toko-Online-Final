@@ -1,23 +1,35 @@
 document.addEventListener('DOMContentLoaded', function () {
-    renderCart();
+    fetchAndRenderCart(); // Ganti fungsi pemanggilan awal
     setupPaymentMethodListener();
     setupCheckoutListener();
 });
 
-// 1. FUNGSI UNTUK MERENDER PRODUK DARI LOCALSTORAGE KE TABEL HTML
-function renderCart() {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+// 1. FUNGSI UNTUK MERENDER PRODUK DARI BACKEND PYTHON (BUKAN LOCALSTORAGE)
+function fetchAndRenderCart() {
+    // Kita ambil data dari session Python (lewat API endpoint khusus keranjang)
+    fetch('/api/get_cart')
+        .then(response => response.json())
+        .then(data => {
+            renderCartItems(data.cart || []);
+        })
+        .catch(err => {
+            console.error("Gagal mengambil data keranjang:", err);
+            renderCartItems([]); // Tampilkan kosong jika gagal
+        });
+}
+
+// Fungsi pembantu untuk menggambar tabel
+function renderCartItems(cart) {
     const container = document.getElementById('cart-items-container');
     const totalElement = document.getElementById('cart-total-price');
     const badgeElement = document.querySelector('.cart-badge');
 
     if (!container) return;
 
-    // Jika keranjang kosong
     if (cart.length === 0) {
         container.innerHTML = `
             <tr>
-                <td colspan="4" class="cart-empty-cell">
+                <td colspan="4" class="cart-empty-cell" style="text-align: center; padding: 20px;">
                     Keranjang belanja kamu masih kosong. <a href="/" class="cart-empty-link">Ayo mulai belanja!</a>
                 </td>
             </tr>
@@ -29,11 +41,11 @@ function renderCart() {
 
     let html = '';
     let totalHarga = 0;
-
-    // Masukkan data barang ke baris tabel
+    
+    // Asumsikan jumlah selalu 1 kecuali ada atribut qty
     cart.forEach((item, index) => {
         const itemPrice = parseInt(item.price) || 0;
-        const itemQty = parseInt(item.quantity) || 1;
+        const itemQty = parseInt(item.qty) || 1; 
         const subtotal = itemPrice * itemQty;
         totalHarga += subtotal;
 
@@ -50,7 +62,7 @@ function renderCart() {
                     Rp ${subtotal.toLocaleString('id-ID')}
                 </td>
                 <td class="cart-action-cell text-center">
-                    <button onclick="deleteCartItem(${index})" class="cart-delete-btn">
+                    <button onclick="deleteCartItemBackend(${index})" class="cart-delete-btn">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
@@ -60,23 +72,31 @@ function renderCart() {
 
     container.innerHTML = html;
     
-    // Update nominal total harga belanja
     if (totalElement) {
         totalElement.textContent = `Rp ${totalHarga.toLocaleString('id-ID')}`;
     }
 
-    // Update angka badge di navbar
     if (badgeElement) {
-        badgeElement.textContent = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
+        badgeElement.textContent = cart.reduce((sum, item) => sum + (parseInt(item.qty) || 1), 0);
     }
 }
 
-// 2. FUNGSI UNTUK MENGHAPUS BARANG DARI KERANJANG
-function deleteCartItem(index) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.splice(index, 1); // Hapus 1 data sesuai urutan index
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart(); // Tampilkan ulang tabel terbaru
+// 2. FUNGSI UNTUK MENGHAPUS BARANG DARI KERANJANG (VIA BACKEND)
+function deleteCartItemBackend(index) {
+    if (!confirm('Hapus barang ini dari keranjang?')) return;
+    
+    fetch(`/api/cart/remove/${index}`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            fetchAndRenderCart(); // Refresh otomatis tampilannya
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => console.error("Error menghapus item:", err));
 }
 
 // 3. FUNGSI UNTUK REVEL/HIDE DETAIL TRANSFER BANK DAN QRIS SECARA OTOMATIS
@@ -128,29 +148,21 @@ function setupCheckoutListener() {
     checkoutForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cart.length === 0) {
-            alert('Keranjang belanja Anda masih kosong!');
-            return;
-        }
-
-        // Siapkan data form dan file untuk dikirim via AJAX ke Flask
+        // Kita tidak mengirim cart_items dari localStorage lagi, 
+        // karena backend sudah punya datanya di session
         const formData = new FormData(this);
-        formData.append('cart_items', JSON.stringify(cart));
 
-        // Melakukan request POST ke backend Flask
         fetch('/checkout', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(response => response.json())
         .then(res => {
-            if (res.status === 200 || res.body.success) {
+            if (res.success) {
                 alert('Pesanan berhasil dibuat! Terima kasih banyak.');
-                localStorage.removeItem('cart'); // Kosongkan localStorage setelah sukses
-                window.location.href = '/orders'; // Redirect ke daftar pesanan
+                window.location.href = '/orders'; 
             } else {
-                alert('Gagal membuat pesanan: ' + (res.body.message || 'Terjadi kesalahan.'));
+                alert('Gagal membuat pesanan: ' + (res.message || 'Terjadi kesalahan.'));
             }
         })
         .catch(err => {

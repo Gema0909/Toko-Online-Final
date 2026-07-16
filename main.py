@@ -41,7 +41,11 @@ def register_page():
 # Halaman Keranjang Belanja
 @app.route('/cart')
 def cart_page():
-    return render_template('cart.html')
+    # Ambil data keranjang dari sesi. Jika belum ada, berikan list kosong []
+    isi_keranjang = session.get('cart', [])
+    
+    # Bawa data isi_keranjang ke dalam cart.html
+    return render_template('cart.html', cart=isi_keranjang)
 
 # Halaman Pesanan Saya
 @app.route('/orders')
@@ -166,6 +170,22 @@ def add_to_cart():
     except Exception as e:
         print("Error tambah keranjang:", e)
         return jsonify({"success": False, "message": "Gagal memasukkan ke keranjang."}), 500
+    
+# API Tambahan untuk mengambil data keranjang
+@app.route('/api/get_cart', methods=['GET'])
+def get_cart_api():
+    return jsonify({"cart": session.get('cart', [])})
+
+# API Tambahan untuk menghapus satu barang dari keranjang
+@app.route('/api/cart/remove/<int:index>', methods=['POST'])
+def remove_from_cart(index):
+    cart = session.get('cart', [])
+    if 0 <= index < len(cart):
+        cart.pop(index)
+        session['cart'] = cart
+        session.modified = True
+        return jsonify({"success": True, "message": "Barang dihapus"})
+    return jsonify({"success": False, "message": "Gagal menghapus"})
     
 # API Hapus Produk berdasarkan ID (Tambahkan di main.py)
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
