@@ -43,6 +43,14 @@ def login_page():
 def register_page():
     return render_template('register.html')
 
+@app.route('/logout')
+def logout():
+    # Menghapus semua data di dalam memori sesi saat ini
+    session.clear()
+    
+    # Setelah sesi dihapus, kembalikan pengunjung ke halaman utama
+    return redirect('/')
+
 # Halaman Keranjang Belanja
 @app.route('/cart')
 def cart_page():
