@@ -119,3 +119,14 @@ function addToCart(productId, productName, productPrice) { // 1. Tambah paramete
         alert("Gagal menambahkan ke keranjang.");
     });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/user')
+    .then(response => response.json())
+    .then(data => {
+        if(data.logged_in) {
+            document.getElementById("nama-user").innerText = "Hi, " + data.username;
+        }
+    })
+    .catch(err => console.error("Error:", err));
+});

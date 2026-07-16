@@ -184,6 +184,18 @@ def add_to_cart():
         print("Error tambah keranjang:", e)
         return jsonify({"success": False, "message": "Gagal memasukkan ke keranjang."}), 500
     
+# ==========================================
+#          ROUTE CEK USER (API)
+# ==========================================
+@app.route('/api/user')
+def get_current_user():
+    # Jika ada session 'user', kirim nama user-nya
+    if 'user' in session:
+        return jsonify({"logged_in": True, "username": session['user']})
+    
+    # Jika belum login, kasih tahu false
+    return jsonify({"logged_in": False})
+    
 # API Tambahan untuk mengambil data keranjang
 @app.route('/api/get_cart', methods=['GET'])
 def get_cart_api():
