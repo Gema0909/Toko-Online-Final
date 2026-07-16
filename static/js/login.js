@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (userRole === 'admin') {
                         window.location.href = '/admin'; // Diarahkan ke Dashboard Admin
                     } else {
-                        window.location.href = '/'; // Diarahkan ke Katalog Belanja User
+                        window.location.href = '/produk'; // Diarahkan ke Katalog Belanja User
                     }
                     
                 } else {

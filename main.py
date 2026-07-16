@@ -23,7 +23,7 @@ def get_db_connection():
 #          ROUTE HALAMAN UTAMA (HTML)
 # ==========================================
 
-# Ini rute untuk halaman utama yang baru kita buat di atas
+# Ini rute untuk halaman utama
 @app.route('/')
 def home_page():
     return render_template('index.html')
@@ -57,7 +57,6 @@ def cart_page():
 def orders_page():
     return render_template('orders.html')
 
-# Halaman Dashboard Admin Kelola Barang
 # Halaman Dashboard Admin Kelola Barang
 @app.route('/admin')
 def admin_page():
