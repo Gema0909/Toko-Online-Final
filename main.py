@@ -426,27 +426,49 @@ def api_update_product(product_id):
         print("Error update produk:", e)
         return jsonify({"success": False, "message": str(e)}), 500
     
-# Pastikan 'jsonify' sudah di-import di bagian paling atas file Python Anda, contoh:
-# from flask import Flask, jsonify, render_template ...
+# ==========================================
+#          ROUTE AMBIL DATA PESANAN SAYA
+# ==========================================
 @app.route('/api/my-orders')
 def get_my_orders():
-    # Ini adalah jalur aman agar web Anda TIDAK crash/error meskipun database belum dibuat
-    try:
-        # 1. Jika Anda sudah punya koneksi database, silakan aktifkan bagian ini:
-        # conn = get_db_connection()
-        # cursor = conn.cursor(dictionary=True)
-        # cursor.execute("SELECT * FROM orders ORDER BY id DESC")
-        # orders = cursor.fetchall()
-        # conn.close()
-        # return jsonify(orders)
-        
-        # 2. SEMENTARA: Kita berikan list kosong [] agar JavaScript membaca "belum ada pesanan"
-        # dan tidak memunculkan pesan error merah lagi di layar Anda.
+    # 1. Jika belum login, kembalikan list kosong
+    if 'user' not in session:
         return jsonify([])
+
+    try:
+        username_dari_sesi = session['user']['username']
+        
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # 2. Cari tahu ID angka dari user yang sedang login
+            cursor.execute("SELECT id FROM users WHERE username = %s", (username_dari_sesi,))
+            user_data = cursor.fetchone()
+            
+            # Jika user tidak ditemukan, kembalikan list kosong
+            if not user_data:
+                conn.close()
+                return jsonify([])
+                
+            real_user_id = user_data['id']
+            
+            # 3. Ambil HANYA pesanan milik user_id ini (diurutkan dari yang terbaru)
+            # Menggunakan kolom 'date' atau 'id' untuk mengurutkan (DESC)
+            cursor.execute("SELECT * FROM orders WHERE user_id = %s ORDER BY id DESC", (real_user_id,))
+            orders = cursor.fetchall()
+            
+            # (Opsional) Jika kolom 'date' kamu berbentuk datetime, ubah ke string agar bisa dibaca JSON
+            for order in orders:
+                if 'date' in order and order['date']:
+                    order['date'] = order['date'].strftime('%d %b %Y %H:%M')
+                    
+        conn.close()
+        
+        # 4. Kirim data pesanan yang asli ke JavaScript
+        return jsonify(orders)
         
     except Exception as e:
         print("Ada error di database orders:", e)
-        return jsonify([]) # Tetap kembalikan array kosong sebagai penyelamat
+        return jsonify([])
     
 # ==========================================
 #    ROUTE UNTUK MENAMBAH PRODUK (HTML FORM)
