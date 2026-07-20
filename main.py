@@ -1,4 +1,6 @@
 import os
+import json
+import uuid
 import pymysql
 from flask import Flask, render_template, request, jsonify, redirect, session
 from werkzeug.utils import secure_filename
@@ -491,6 +493,78 @@ def admin_add_product_form():
     except Exception as e:
         print("Error tambah produk:", e)
         return f"Terjadi kesalahan saat menambah produk: {str(e)}", 500
+    
+# ==========================================
+#          ROUTE CHECKOUT / BUAT PESANAN
+# ==========================================
+@app.route('/checkout', methods=['POST'])
+def process_checkout():
+    # 1. Pastikan user sudah login
+    if 'user' not in session:
+        return jsonify({"success": False, "message": "Silakan login terlebih dahulu!"}), 401
+        
+    try:
+        # 2. Pastikan keranjang tidak kosong
+        cart = session.get('cart', [])
+        if not cart:
+            return jsonify({"success": False, "message": "Keranjang belanja kosong!"}), 400
+
+        # 3. Ambil data teks dari form 
+        address = request.form.get('address', 'Alamat tidak diisi')
+        payment_method = request.form.get('payment_method', 'Transfer')
+
+        # 4. PROSES UPLOAD BUKTI PEMBAYARAN
+        bukti_file = request.files.get('payment_proof')
+        bukti_url = ""
+
+        if bukti_file and bukti_file.filename != '':
+            upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+                
+            # Simpan file gambar dengan nama unik
+            ext = bukti_file.filename.rsplit('.', 1)[1].lower() if '.' in bukti_file.filename else 'jpg'
+            unique_filename = f"qris_{uuid.uuid4().hex}.{ext}"
+            
+            bukti_file.save(os.path.join(upload_folder, unique_filename))
+            bukti_url = f"/static/uploads/{unique_filename}"
+
+        # 5. SIAPKAN DATA UNTUK DATABASE
+        total_amount = sum(int(item['price']) * int(item.get('qty', 1)) for item in cart)
+        user_id = session['user']['username'] # Menyimpan username sebagai identitas pembeli
+        items_json = json.dumps(cart) # Mengubah isi keranjang (list) menjadi teks JSON
+        status_pesanan = 'Menunggu Konfirmasi'
+        status_pembayaran = 'Pending'
+
+        # 6. SIMPAN KE DATABASE (Tabel orders sesuai struktur kamu)
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            sql = """INSERT INTO orders 
+                     (user_id, items, total_amount, address, status, payment_method, payment_status, payment_proof) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+                     
+            cursor.execute(sql, (
+                user_id, 
+                items_json, 
+                total_amount, 
+                address, 
+                status_pesanan, 
+                payment_method, 
+                status_pembayaran, 
+                bukti_url
+            ))
+            conn.commit()
+        conn.close()
+
+        # 7. KOSONGKAN KERANJANG SETELAH SUKSES
+        session['cart'] = []
+        session.modified = True
+
+        return jsonify({"success": True, "message": "Pesanan berhasil dibuat!"})
+
+    except Exception as e:
+        print("Error saat checkout:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # Jalankan Server Utama
 if __name__ == '__main__':
