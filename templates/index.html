@@ -6,6 +6,7 @@
     <title>Toko Online - Beranda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Memanggil file CSS -->
     <link rel="stylesheet" href="/static/css/index.css">
 </head>
 <body>
@@ -14,12 +15,18 @@
             <div class="brand">
                 <a href="/"><i class="fas fa-shopping-bag"></i> Toko Online</a>
             </div>
+            
             <div class="nav-links">
                 <a href="/" class="nav-link active">Home</a>
                 <a href="/produk" class="nav-link">Produk</a>
                 <a href="#tentang" class="nav-link">Tentang</a>
-                <a href="/login" class="nav-link">Login</a>
-                <a href="/register" class="nav-link btn-daftar">Daftar</a>
+                
+                <!-- Placeholder untuk User/Login (Nanti diatur JS) -->
+                <span id="nama-user" class="nav-greeting" style="display: none;"></span>
+                <a id="btn-keranjang" href="/cart" class="nav-link" style="display: none;"><i class="fas fa-shopping-cart"></i></a>
+                <a id="btn-login" href="/login" class="nav-link">Login</a>
+                <a id="btn-daftar" href="/register" class="nav-link btn-daftar">Daftar</a>
+                <a id="btn-logout" href="/logout" class="nav-link btn-logout" style="display: none;"><i class="fas fa-sign-out-alt"></i></a>
             </div>
         </div>
     </nav>
@@ -28,41 +35,51 @@
         <div class="hero-content">
             <h1>Selamat Datang di Toko Online</h1>
             <p>Belanja mudah, cepat, dan aman.</p>
+            <br>
             <a href="/produk" class="cta-button">Lihat Produk</a>
         </div>
     </header>
 
     <main class="produk-terbaru">
-        <h2 class="section-title hidden-anim">Tentang Kami</h2>
+        <h2 class="section-title hidden-anim">Produk Terbaru</h2>
         
         <div class="product-grid">
+            <!-- KARTU 1 -->
             <div class="product-card hidden-anim" style="transition-delay: 100ms;">
                 <div class="product-placeholder">
                     <i class="fas fa-box-open fa-3x"></i>
                 </div>
                 <h3>Produk 1</h3>
+                <a href="/produk" class="btn-detail">Lihat Detail</a>
             </div>
             
+            <!-- KARTU 2 -->
             <div class="product-card hidden-anim" style="transition-delay: 200ms;">
                 <div class="product-placeholder">
                     <i class="fas fa-box-open fa-3x"></i>
                 </div>
                 <h3>Produk 2</h3>
+                <a href="/produk" class="btn-detail">Lihat Detail</a>
             </div>
             
+            <!-- KARTU 3 -->
             <div class="product-card hidden-anim" style="transition-delay: 300ms;">
                 <div class="product-placeholder">
                     <i class="fas fa-box-open fa-3x"></i>
                 </div>
                 <h3>Produk 3</h3>
+                <a href="/produk" class="btn-detail">Lihat Detail</a>
             </div>
         </div>
     </main>
 
     <footer id="tentang">
+        <h3>Tentang Kami</h3>
+        <p class="footer-desc">Toko Online adalah destinasi belanja terbaik untuk segala kebutuhan Anda. Kami berkomitmen memberikan barang berkualitas dengan harga terjangkau.</p>
         <p>&copy; 2026 Toko Online. All rights reserved.</p>
     </footer>
 
+    <!-- Memanggil file JavaScript -->
     <script src="/static/js/index.js"></script>
 </body>
 </html>

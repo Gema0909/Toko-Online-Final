@@ -35,3 +35,95 @@ footer { text-align: center; padding: 2rem; background-color: #1e293b; color: #6
 /* Animasi JS (Fade-in & Naik dari bawah) */
 .hidden-anim { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
 .show-anim { opacity: 1; transform: translateY(0); }
+
+/* =========================================
+   TAMBAHAN STYLE UNTUK BERANDA
+   ========================================= */
+
+/* Tombol CTA (Lihat Produk) */
+.cta-button {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+.cta-button:hover {
+    background: #2563eb;
+}
+
+/* Jarak Main Section */
+.produk-terbaru {
+    margin-top: 50px;
+}
+.produk-terbaru .section-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Grid Layout untuk Kartu Produk */
+.product-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Desain Kartu Produk */
+.product-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 250px;
+}
+.product-placeholder {
+    margin-bottom: 15px;
+    color: #94a3b8;
+}
+.product-card h3 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* Tombol Detail di dalam Kartu */
+.btn-detail {
+    display: block;
+    background: #334155;
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+.btn-detail:hover {
+    background: #475569;
+}
+
+/* Tombol Logout Navbar */
+.btn-logout {
+    color: #ef4444 !important;
+}
+
+/* Bagian Footer */
+footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 20px;
+    background: #0f172a;
+    color: #94a3b8;
+}
+footer h3 {
+    margin-bottom: 10px;
+    color: white;
+}
+footer .footer-desc {
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
