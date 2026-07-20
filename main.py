@@ -499,21 +499,18 @@ def admin_add_product_form():
 # ==========================================
 @app.route('/checkout', methods=['POST'])
 def process_checkout():
-    # 1. Pastikan user sudah login
     if 'user' not in session:
         return jsonify({"success": False, "message": "Silakan login terlebih dahulu!"}), 401
         
     try:
-        # 2. Pastikan keranjang tidak kosong
         cart = session.get('cart', [])
         if not cart:
             return jsonify({"success": False, "message": "Keranjang belanja kosong!"}), 400
 
-        # 3. Ambil data teks dari form 
         address = request.form.get('address', 'Alamat tidak diisi')
         payment_method = request.form.get('payment_method', 'Transfer')
 
-        # 4. PROSES UPLOAD BUKTI PEMBAYARAN
+        # PROSES UPLOAD BUKTI PEMBAYARAN
         bukti_file = request.files.get('payment_proof')
         bukti_url = ""
 
@@ -522,29 +519,39 @@ def process_checkout():
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
                 
-            # Simpan file gambar dengan nama unik
             ext = bukti_file.filename.rsplit('.', 1)[1].lower() if '.' in bukti_file.filename else 'jpg'
             unique_filename = f"qris_{uuid.uuid4().hex}.{ext}"
             
             bukti_file.save(os.path.join(upload_folder, unique_filename))
             bukti_url = f"/static/uploads/{unique_filename}"
 
-        # 5. SIAPKAN DATA UNTUK DATABASE
         total_amount = sum(int(item['price']) * int(item.get('qty', 1)) for item in cart)
-        user_id = session['user']['username'] # Menyimpan username sebagai identitas pembeli
-        items_json = json.dumps(cart) # Mengubah isi keranjang (list) menjadi teks JSON
+        username_dari_sesi = session['user']['username']
+        items_json = json.dumps(cart)
         status_pesanan = 'Menunggu Konfirmasi'
         status_pembayaran = 'Pending'
 
-        # 6. SIMPAN KE DATABASE (Tabel orders sesuai struktur kamu)
+        # KONEKSI DATABASE
         conn = get_db_connection()
         with conn.cursor() as cursor:
+            # 1. CARI TAHU ID (ANGKA) DARI USERNAME INI DI TABEL USERS
+            cursor.execute("SELECT id FROM users WHERE username = %s", (username_dari_sesi,))
+            user_data = cursor.fetchone()
+            
+            # Jika usernya entah kenapa tidak ada di database
+            if not user_data:
+                conn.close()
+                return jsonify({"success": False, "message": "Data user tidak ditemukan di database!"}), 400
+                
+            real_user_id = user_data['id'] # Nah, ini baru berisi angka (misal: 1, 2, atau 3)
+
+            # 2. SIMPAN KE TABEL ORDERS MENGGUNAKAN real_user_id (ANGKA)
             sql = """INSERT INTO orders 
                      (user_id, items, total_amount, address, status, payment_method, payment_status, payment_proof) 
                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
                      
             cursor.execute(sql, (
-                user_id, 
+                real_user_id, 
                 items_json, 
                 total_amount, 
                 address, 
@@ -556,7 +563,6 @@ def process_checkout():
             conn.commit()
         conn.close()
 
-        # 7. KOSONGKAN KERANJANG SETELAH SUKSES
         session['cart'] = []
         session.modified = True
 
