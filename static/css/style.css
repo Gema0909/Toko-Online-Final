@@ -403,36 +403,36 @@ body {
         display: block !important;
     }
 
-    /* --- 2. SUSUNAN MENU (HOME, PRODUK, LOGOUT) --- */
+    /* --- 2. SUSUNAN MENU (HOME, PRODUK, TENTANG, DLL) --- */
     .nav-links {
         display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 10px 15px !important;
+        flex-direction: row !important; /* Paksa berjajar ke samping */
+        flex-wrap: nowrap !important; /* Dilarang numpuk ke bawah */
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 20px !important;
         width: 100% !important;
-        background-color: rgba(255, 255, 255, 0.05); /* Sedikit aksen background */
-        padding: 10px !important;
-        border-radius: 8px !important;
+        padding: 5px 0 15px 0 !important; /* Ruang bernapas */
+        background-color: transparent !important; /* Buang kotak abu-abu yang bikin buntet */
+        
+        /* Fitur ajaib biar bisa digeser (scroll) pakai jari di HP */
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch; /* Biar scrollnya mulus di iPhone */
     }
 
-    /* Perbaikan susunan menu agar tombol dan ikon tidak berantakan */
-    .nav-links {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        align-items: center !important; /* Memastikan semua baris rata tengah */
-        gap: 10px 15px !important;
+    /* Sembunyikan garis scrollbar biar terlihat elegan & bersih */
+    .nav-links::-webkit-scrollbar {
+        display: none;
     }
 
     .nav-link, .nav-greeting, .nav-links a {
-        font-size: 0.85rem !important;
+        font-size: 0.9rem !important;
         margin: 0 !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 6px 10px !important;
         gap: 5px !important;
-        height: auto !important; /* Ganti 100% jadi auto agar tidak memanjang aneh */
+        white-space: nowrap !important; /* Cegah teks terpotong ke bawah */
     }
 
     /* --- 3. JUDUL HALAMAN (SELAMAT DATANG) --- */
