@@ -333,6 +333,26 @@ def delete_order(order_id):
         return jsonify({"success": False, "message": str(e)}), 500
     
 # ==========================================
+#          ROUTE ADMIN: KONFIRMASI PEMBAYARAN
+# ==========================================
+@app.route('/api/admin/orders/<int:order_id>/payment-confirm', methods=['POST'])
+def api_confirm_payment(order_id):
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+    
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Perbarui kolom payment_status menjadi 'Lunas'
+            cursor.execute("UPDATE orders SET payment_status = %s WHERE id = %s", ('Lunas', order_id))
+            conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Pembayaran berhasil divalidasi!"})
+    except Exception as e:
+        print("Error saat mengonfirmasi pembayaran:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
+    
+# ==========================================
 #       API UNTUK MENAMBAH PRODUK BARU
 # ==========================================
 @app.route('/api/products', methods=['POST'])
