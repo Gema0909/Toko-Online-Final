@@ -383,57 +383,53 @@ body {
 }
 
 /* ==========================================
-   TAMPILAN RESPONSIF UNTUK HP (MOBILE)
+   PERBAIKAN TAMPILAN MOBILE (HP) - VERSI FINAL
    ========================================== */
 @media (max-width: 768px) {
-
-    /* 1. KELOLA NAVBAR AGAR RAPI DI HP */
+    
+    /* --- 1. NAVBAR & LOGO --- */
     .nav-container {
-        flex-direction: column;
-        gap: 12px;
-        padding: 10px;
-    }
-
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px 15px;
-        font-size: 0.9rem;
-    }
-
-    /* 2. UBAH SEMUA GRID DUA KOLOM MENJADI 1 KOLOM */
-    .dashboard-grid,
-    .stats-grid,
-    .form-row,
-    .product-grid {
-        grid-template-columns: 1fr !important;
+        display: flex !important;
         flex-direction: column !important;
-        gap: 15px !important;
-    }
-
-    .w-50 {
+        align-items: center !important;
+        padding: 15px 10px !important;
         width: 100% !important;
     }
 
-    /* 3. SETTINGAN LAYAR PADDING CONTAINER UTAMA */
-    .main-container {
+    .brand {
+        font-size: 1.5rem !important;
+        white-space: nowrap !important; /* Paksa logo 1 baris */
+        margin-bottom: 12px !important;
+        display: block !important;
+    }
+
+    /* --- 2. SUSUNAN MENU (HOME, PRODUK, LOGOUT) --- */
+    .nav-links {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px 15px !important;
+        width: 100% !important;
+        background-color: rgba(255, 255, 255, 0.05); /* Sedikit aksen background */
         padding: 10px !important;
+        border-radius: 8px !important;
     }
 
-    /* 4. TABEL KATALOG BISA DI-SCROLL KE SAMPING */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    .nav-link, .nav-greeting {
+        font-size: 0.85rem !important;
+        margin: 0 !important;
     }
 
-    /* 5. PENYESUAIAN UKURAN FONT & MODAL DI HP */
-    .admin-header h2 {
-        font-size: 1.5rem;
+    /* --- 3. JUDUL HALAMAN (SELAMAT DATANG) --- */
+    h1, .hero h1, .catalog-banner h1 {
+        font-size: 1.6rem !important; /* Perkecil ukuran font */
+        line-height: 1.4 !important;
+        margin-bottom: 10px !important;
+        padding: 0 10px !important;
     }
 
-    .modal-content {
-        width: 95% !important;
-        padding: 15px !important;
-        margin: 20px auto;
+    .hero p, .catalog-banner p {
+        font-size: 0.9rem !important;
+        padding: 0 10px !important;
     }
 }
