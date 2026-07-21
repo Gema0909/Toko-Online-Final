@@ -34,7 +34,8 @@ function loadAdminOrders() {
             }
 
             orders.forEach(order => {
-                const formatTotal = new Intl.NumberFormat('id-ID').format(order.total_price);
+                // 1. PERBAIKAN BACA TOTAL HARGA (Ubah ke total_amount)
+                const formatTotal = new Intl.NumberFormat('id-ID').format(order.total_amount || 0);
                 const paymentStatusClass = order.payment_status === 'Lunas' ? 'text-green font-bold' : 'text-red font-bold';
                 
                 const sPending = order.status === 'Pending' ? 'selected' : '';
@@ -42,13 +43,37 @@ function loadAdminOrders() {
                 const sDikirim = order.status === 'Dikirim' ? 'selected' : '';
                 const sSelesai = order.status === 'Selesai' ? 'selected' : '';
 
+                // 2. PERBAIKAN BACA DATA PRODUK DARI JSON
+                let parsedItems = [];
+                try {
+                    parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                } catch (e) {
+                    console.error("Gagal membaca daftar produk:", e);
+                }
+
+                let itemsHtml = '';
+                if (parsedItems && parsedItems.length > 0) {
+                    parsedItems.forEach(item => {
+                        itemsHtml += `<div style="margin-bottom: 4px;">- ${item.name || 'Produk'} <span style="color: #888;">(${item.qty || 1}x)</span></div>`;
+                    });
+                } else {
+                    itemsHtml = 'Detail barang tidak tersedia';
+                }
+
+                // 3. TAMBAHKAN LINK BUKTI PEMBAYARAN UNTUK ADMIN
+                let proofHtml = '';
+                if (order.payment_proof) {
+                    proofHtml = `<p><b>Bukti Pembayaran:</b> <a href="${order.payment_proof}" target="_blank" style="color: #3b82f6; text-decoration: underline;"><i class="fas fa-image"></i> Cek Bukti Transfer</a></p>`;
+                }
+
                 const orderItem = document.createElement('div');
                 orderItem.className = 'order-item';
                 orderItem.innerHTML = `
                     <div class="order-header">
                         <div>
+                            <!-- PERBAIKAN BACA TANGGAL (Ubah ke order.date) -->
                             <p class="order-id">Pesanan #${order.id} (User ID: ${order.user_id})</p>
-                            <p class="order-date">${order.created_at}</p>
+                            <p class="order-date">${order.date || 'Tanggal tidak tersedia'}</p>
                         </div>
                         <div class="status-form">
                             <select class="status-select" id="status-select-${order.id}">
@@ -61,14 +86,16 @@ function loadAdminOrders() {
                         </div>
                     </div>
                     
-                    <div class="order-products">
-                        ${order.products_summary || 'Detail barang tidak tersedia'}
+                    <div class="order-products" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin: 10px 0;">
+                        <b style="color: #10b981;">Daftar Barang Dibeli:</b><br>
+                        ${itemsHtml}
                     </div>
                     
                     <div class="order-details">
-                        <p><b>Alamat:</b> ${order.address}</p>
-                        <p><b>Metode Pembayaran:</b> ${order.payment_method}</p>
+                        <p><b>Alamat:</b> ${order.address || '-'}</p>
+                        <p><b>Metode:</b> ${order.payment_method || '-'}</p>
                         <p><b>Status Pembayaran:</b> <span class="${paymentStatusClass}">${order.payment_status}</span></p>
+                        ${proofHtml}
                     </div>
                     <p class="order-total">Total: Rp ${formatTotal}</p>
                 `;
