@@ -418,6 +418,11 @@ body {
     .nav-link, .nav-greeting {
         font-size: 0.85rem !important;
         margin: 0 !important;
+        display: flex !important;
+        align-items: center !important; /* Menyejajarkan icon dan teks di tengah vertikal */
+        padding: 5px 8px !important; /* Memberikan bantalan yang sama rata */
+        gap: 5px !important; /* Memberi jarak rapi antara icon dan tulisan */
+        height: 100% !important;
     }
 
     /* --- 3. JUDUL HALAMAN (SELAMAT DATANG) --- */
