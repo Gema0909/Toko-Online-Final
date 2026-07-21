@@ -381,3 +381,59 @@ body {
         font-size: 22px;
     }
 }
+
+/* ==========================================
+   TAMPILAN RESPONSIF UNTUK HP (MOBILE)
+   ========================================== */
+@media (max-width: 768px) {
+
+    /* 1. KELOLA NAVBAR AGAR RAPI DI HP */
+    .nav-container {
+        flex-direction: column;
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* 2. UBAH SEMUA GRID DUA KOLOM MENJADI 1 KOLOM */
+    .dashboard-grid,
+    .stats-grid,
+    .form-row,
+    .product-grid {
+        grid-template-columns: 1fr !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .w-50 {
+        width: 100% !important;
+    }
+
+    /* 3. SETTINGAN LAYAR PADDING CONTAINER UTAMA */
+    .main-container {
+        padding: 10px !important;
+    }
+
+    /* 4. TABEL KATALOG BISA DI-SCROLL KE SAMPING */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* 5. PENYESUAIAN UKURAN FONT & MODAL DI HP */
+    .admin-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-content {
+        width: 95% !important;
+        padding: 15px !important;
+        margin: 20px auto;
+    }
+}
