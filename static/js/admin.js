@@ -34,7 +34,7 @@ function loadAdminOrders() {
             }
 
             orders.forEach(order => {
-                // 1. PERBAIKAN BACA TOTAL HARGA (Ubah ke total_amount)
+                // 1. PERBAIKAN BACA TOTAL HARGA
                 const formatTotal = new Intl.NumberFormat('id-ID').format(order.total_amount || 0);
                 const paymentStatusClass = order.payment_status === 'Lunas' ? 'text-green font-bold' : 'text-red font-bold';
                 
@@ -51,7 +51,7 @@ function loadAdminOrders() {
                     console.error("Gagal membaca daftar produk:", e);
                 }
 
-                // TAMPILAN PRODUK LEBIH RAPI (Pakai Flexbox & Garis Bawah Putus-putus)
+                // TAMPILAN PRODUK LEBIH RAPI 
                 let itemsHtml = '';
                 if (parsedItems && parsedItems.length > 0) {
                     parsedItems.forEach(item => {
@@ -65,12 +65,12 @@ function loadAdminOrders() {
                     itemsHtml = '<p style="color: #94a3b8; font-style: italic; margin: 0;">Detail barang tidak tersedia</p>';
                 }
 
-                // 3. TAMPILAN LINK BUKTI PEMBAYARAN SEPERTI TOMBOL KECIL
+                // 3. TAMPILAN LINK BUKTI PEMBAYARAN (Jarak Diperlebar)
                 let proofHtml = '';
                 if (order.payment_proof) {
                     proofHtml = `
-                        <div style="display: flex; align-items: center; margin-top: 8px;">
-                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Bukti Pembayaran</span>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-top: 8px;">
+                            <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Bukti Pembayaran</span>
                             <a href="${order.payment_proof}" target="_blank" style="color: #3b82f6; text-decoration: none; background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; border: 1px solid rgba(59, 130, 246, 0.3); transition: 0.3s;">
                                 <i class="fas fa-image"></i> Lihat Resi
                             </a>
@@ -80,9 +80,9 @@ function loadAdminOrders() {
                 const orderItem = document.createElement('div');
                 orderItem.className = 'order-item';
                 
-                // 4. STRUKTUR HTML KESELURUHAN (Desain Baru dengan Tombol Hapus)
+                // 4. STRUKTUR HTML KESELURUHAN (Desain Baru dengan Jarak Lebar)
                 orderItem.innerHTML = `
-                    <!-- BAGIAN HEADER (Judul & Tombol) -->
+                    <!-- BAGIAN HEADER -->
                     <div class="order-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;">
                         <div>
                             <h4 style="margin: 0; color: #38bdf8; font-size: 1.15rem;">Pesanan #${order.id} <span style="font-size: 0.85rem; color: #64748b; font-weight: normal;">(User ID: ${order.user_id})</span></h4>
@@ -100,7 +100,7 @@ function loadAdminOrders() {
                         </div>
                     </div>
                     
-                    <!-- BAGIAN DAFTAR PRODUK (Kotak dengan background gelap) -->
+                    <!-- BAGIAN DAFTAR PRODUK -->
                     <div class="order-products" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                         <p style="color: #10b981; font-weight: 600; margin-top: 0; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             <i class="fas fa-box-open" style="margin-right: 5px;"></i> Daftar Barang Dibeli
@@ -108,24 +108,26 @@ function loadAdminOrders() {
                         ${itemsHtml}
                     </div>
                     
-                    <!-- BAGIAN DETAIL ALAMAT & PEMBAYARAN (Format Grid/Tabel) -->
+                    <!-- BAGIAN DETAIL ALAMAT & PEMBAYARAN -->
                     <div class="order-details-grid" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; margin-bottom: 15px;">
-                        <div style="display: flex; align-items: flex-start;">
-                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Alamat Kirim</span>
+                        <div style="display: flex; align-items: flex-start; gap: 15px;">
+                            <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Alamat Kirim</span>
                             <span style="color: #f8fafc; flex-grow: 1; line-height: 1.4;">${order.address || '-'}</span>
                         </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Metode Pembayaran</span>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Metode Pembayaran</span>
                             <span style="color: #f8fafc;">${order.payment_method || '-'}</span>
                         </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Status Pembayaran</span>
-                            <span class="${paymentStatusClass}" style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">${order.payment_status}</span>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Status Pembayaran</span>
+                            <div>
+                                <span class="${paymentStatusClass}" style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">${order.payment_status}</span>
+                            </div>
                         </div>
                         ${proofHtml}
                     </div>
 
-                    <!-- BAGIAN TOTAL (Garis atas pembatas) -->
+                    <!-- BAGIAN TOTAL -->
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; align-items: center;">
                         <span style="color: #94a3b8; margin-right: 15px;">Total Tagihan:</span>
                         <span style="color: #10b981; font-size: 1.3rem; font-weight: bold;">Rp ${formatTotal}</span>
