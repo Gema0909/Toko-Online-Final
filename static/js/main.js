@@ -37,23 +37,27 @@ function loadMyOrders() {
                 const payStatusStr = (order.payment_status || 'Pending').toLowerCase();
                 if (payStatusStr === 'lunas' || payStatusStr === 'paid') payStatusClass = 'badge-completed';
 
+                // 1. PERBAIKAN BACA DATA PRODUK (Ubah teks JSON kembali jadi Array/Daftar)
+                let parsedItems = [];
+                try {
+                    parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                } catch (e) {
+                    console.error("Gagal membaca daftar produk:", e);
+                }
+
                 // Render list item produk di dalam pesanan tersebut
                 let itemsHtml = '';
-                if (order.items && Array.isArray(order.items)) {
-                    order.items.forEach(item => {
+                if (parsedItems && parsedItems.length > 0) {
+                    parsedItems.forEach(item => {
+                        // Sesuai dengan nama kunci di sesi keranjang Python ('name' dan 'qty')
                         itemsHtml += `
-                            <div class="item-row">
-                                <span>${item.product_name} <span class="item-qty">(${item.quantity}x)</span></span>
+                            <div class="item-row" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>${item.name || item.product_name} <span class="item-qty" style="color: #888;">(${item.qty || item.quantity || 1}x)</span></span>
                                 <span>Rp ${formatHarga(item.price)}</span>
                             </div>`;
                     });
                 } else {
-                    // Fallback jika backend mengirim struktur data datar/single-item
-                    itemsHtml = `
-                        <div class="item-row">
-                            <span>${order.product_name || 'Produk'} <span class="item-qty">(${order.quantity || 1}x)</span></span>
-                            <span>Rp ${formatHarga(order.price || order.total_price)}</span>
-                        </div>`;
+                    itemsHtml = `<div class="item-row"><span>Tidak ada detail produk</span></div>`;
                 }
 
                 const orderCard = document.createElement('div');
@@ -69,7 +73,7 @@ function loadMyOrders() {
                         </div>
                     </div>
 
-                    <div class="order-items">
+                    <div class="order-items" style="border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 15px;">
                         ${itemsHtml}
                     </div>
 
@@ -84,10 +88,11 @@ function loadMyOrders() {
                             <span class="meta-label">Status Pembayaran</span>
                             <p class="mb-2"><span class="badge ${payStatusClass}">${order.payment_status}</span></p>
 
+                            <!-- 2. PERBAIKAN LINK GAMBAR BUKTI -->
                             ${order.payment_proof ? `
                             <div class="proof-section">
                                 <span class="meta-label">Bukti Pembayaran</span>
-                                <a href="/static/uploads/${order.payment_proof}" target="_blank" class="proof-link">
+                                <a href="${order.payment_proof}" target="_blank" class="proof-link">
                                     <i class="fas fa-image"></i> Lihat Bukti Pembayaran
                                 </a>
                             </div>` : ''}
@@ -95,7 +100,10 @@ function loadMyOrders() {
                         
                         <div class="order-total-section">
                             <span class="meta-label">Total Bayar:</span>
-                            <p class="total-price">Rp ${formatHarga(order.total_price || order.total)}</p>
+                            <!-- 3. PERBAIKAN TOTAL BAYAR (order.total_amount) -->
+                            <p class="total-price" style="font-size: 1.2rem; font-weight: bold; color: #10b981;">
+                                Rp ${formatHarga(order.total_amount || order.total_price || 0)}
+                            </p>
                         </div>
                     </div>
                 `;
