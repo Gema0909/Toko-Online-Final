@@ -309,6 +309,28 @@ def api_update_order_status(order_id):
         return jsonify({"success": True, "message": "Status pesanan berhasil diperbarui!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+# ==========================================
+#          ROUTE ADMIN: HAPUS PESANAN
+# ==========================================
+@app.route('/api/admin/orders/<int:order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    # Keamanan ekstra: Pastikan hanya admin yang bisa menghapus
+    if 'user' not in session or session['user'].get('role') != 'admin':
+        return jsonify({"success": False, "message": "Akses ditolak!"}), 403
+
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Hapus baris pesanan dari tabel orders berdasarkan ID-nya
+            cursor.execute("DELETE FROM orders WHERE id = %s", (order_id,))
+            conn.commit()
+        conn.close()
+
+        return jsonify({"success": True, "message": "Pesanan berhasil dihapus secara permanen!"})
+    except Exception as e:
+        print("Error saat menghapus pesanan:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
     
 # ==========================================
 #       API UNTUK MENAMBAH PRODUK BARU

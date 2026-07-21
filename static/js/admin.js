@@ -75,7 +75,7 @@ function loadAdminOrders() {
                             <p class="order-id">Pesanan #${order.id} (User ID: ${order.user_id})</p>
                             <p class="order-date">${order.date || 'Tanggal tidak tersedia'}</p>
                         </div>
-                        <div class="status-form">
+                        <div class="status-form" style="display: flex; gap: 5px; align-items: center;">
                             <select class="status-select" id="status-select-${order.id}">
                                 <option value="Pending" ${sPending}>Pending</option>
                                 <option value="Diproses" ${sDiproses}>Diproses</option>
@@ -83,6 +83,8 @@ function loadAdminOrders() {
                                 <option value="Selesai" ${sSelesai}>Selesai</option>
                             </select>
                             <button type="button" class="btn-sm btn-blue" onclick="updateOrderStatus(${order.id})">Update</button>
+                            <!-- INI TOMBOL HAPUS BARUNYA -->
+                            <button type="button" class="btn-sm" style="background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;" onclick="deleteOrder(${order.id})">Hapus</button>
                         </div>
                     </div>
                     
@@ -327,3 +329,30 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAdminOrders();
     loadAdminProducts();
 });
+
+// ==========================================
+// FUNGSI ADMIN: HAPUS PESANAN
+// ==========================================
+function deleteOrder(orderId) {
+    // Tampilkan popup konfirmasi sebelum menghapus beneran
+    if (!confirm('Apakah Anda yakin ingin menghapus pesanan #' + orderId + ' secara permanen? Data tidak bisa dikembalikan.')) {
+        return; // Batalkan jika admin klik 'Cancel'
+    }
+
+    fetch(`/api/admin/orders/${orderId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Pesanan berhasil dihapus!');
+            loadAdminOrders(); // Refresh daftar pesanan agar yang dihapus menghilang dari layar
+        } else {
+            alert('Gagal menghapus pesanan: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan pada sistem saat mencoba menghapus.');
+    });
+}
