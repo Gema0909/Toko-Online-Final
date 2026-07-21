@@ -9,9 +9,14 @@ function loadAdminStats() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const formatRevenue = new Intl.NumberFormat('id-ID').format(data.total_revenue);
-                document.getElementById('stat-revenue').innerText = `Rp ${formatRevenue}`;
-                document.getElementById('stat-orders').innerText = `${data.total_orders} Transaksi`;
+                const formatRevenue = new Intl.NumberFormat('id-ID').format(data.total_revenue || 0);
+                
+                // Mengakomodasi jika HTML menggunakan ID stat-revenue atau total-pendapatan
+                const elRev = document.getElementById('total-pendapatan') || document.getElementById('stat-revenue');
+                const elOrd = document.getElementById('total-transaksi') || document.getElementById('stat-orders');
+                
+                if (elRev) elRev.innerText = `Rp ${formatRevenue}`;
+                if (elOrd) elOrd.innerText = `${data.total_orders} Transaksi`;
             }
         })
         .catch(err => console.error("Gagal memuat statistik admin:", err));
@@ -34,7 +39,6 @@ function loadAdminOrders() {
             }
 
             orders.forEach(order => {
-                // 1. PERBAIKAN BACA TOTAL HARGA
                 const formatTotal = new Intl.NumberFormat('id-ID').format(order.total_amount || 0);
                 const paymentStatusClass = order.payment_status === 'Lunas' ? 'text-green font-bold' : 'text-red font-bold';
                 
@@ -43,7 +47,6 @@ function loadAdminOrders() {
                 const sDikirim = order.status === 'Dikirim' ? 'selected' : '';
                 const sSelesai = order.status === 'Selesai' ? 'selected' : '';
 
-                // 2. PERBAIKAN BACA DATA PRODUK DARI JSON
                 let parsedItems = [];
                 try {
                     parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
@@ -51,7 +54,6 @@ function loadAdminOrders() {
                     console.error("Gagal membaca daftar produk:", e);
                 }
 
-                // TAMPILAN PRODUK LEBIH RAPI 
                 let itemsHtml = '';
                 if (parsedItems && parsedItems.length > 0) {
                     parsedItems.forEach(item => {
@@ -65,7 +67,6 @@ function loadAdminOrders() {
                     itemsHtml = '<p style="color: #94a3b8; font-style: italic; margin: 0;">Detail barang tidak tersedia</p>';
                 }
 
-                // 3. TAMPILAN LINK BUKTI PEMBAYARAN (Jarak Diperlebar)
                 let proofHtml = '';
                 if (order.payment_proof) {
                     proofHtml = `
@@ -80,9 +81,7 @@ function loadAdminOrders() {
                 const orderItem = document.createElement('div');
                 orderItem.className = 'order-item';
                 
-                // 4. STRUKTUR HTML KESELURUHAN (Ditambah tombol Verifikasi Lunas)
                 orderItem.innerHTML = `
-                    <!-- BAGIAN HEADER -->
                     <div class="order-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;">
                         <div>
                             <h4 style="margin: 0; color: #38bdf8; font-size: 1.15rem;">Pesanan #${order.id} <span style="font-size: 0.85rem; color: #64748b; font-weight: normal;">(User ID: ${order.user_id})</span></h4>
@@ -100,7 +99,6 @@ function loadAdminOrders() {
                         </div>
                     </div>
                     
-                    <!-- BAGIAN DAFTAR PRODUK -->
                     <div class="order-products" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                         <p style="color: #10b981; font-weight: 600; margin-top: 0; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             <i class="fas fa-box-open" style="margin-right: 5px;"></i> Daftar Barang Dibeli
@@ -108,7 +106,6 @@ function loadAdminOrders() {
                         ${itemsHtml}
                     </div>
                     
-                    <!-- BAGIAN DETAIL ALAMAT & PEMBAYARAN -->
                     <div class="order-details-grid" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; margin-bottom: 15px;">
                         <div style="display: flex; align-items: flex-start; gap: 15px;">
                             <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Alamat Kirim</span>
@@ -123,7 +120,6 @@ function loadAdminOrders() {
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span class="${paymentStatusClass}" style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">${order.payment_status}</span>
                                 
-                                <!-- TOMBOL BARU: Hanya muncul jika statusnya 'Pending' (dan bukan 'Lunas') -->
                                 ${order.payment_status && order.payment_status.toLowerCase() !== 'lunas' ? `
                                 <button type="button" class="btn-sm" style="background-color: #10b981; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 500;" onclick="confirmPayment(${order.id})">Verifikasi Lunas</button>
                                 ` : ''}
@@ -132,7 +128,6 @@ function loadAdminOrders() {
                         ${proofHtml}
                     </div>
 
-                    <!-- BAGIAN TOTAL -->
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; align-items: center;">
                         <span style="color: #94a3b8; margin-right: 15px;">Total Tagihan:</span>
                         <span style="color: #10b981; font-size: 1.3rem; font-weight: bold;">Rp ${formatTotal}</span>
@@ -151,22 +146,28 @@ function loadAdminOrders() {
 // 3. MENGUBAH STATUS PENGIRIMAN PESANAN
 // ==========================================
 function updateOrderStatus(orderId) {
-    const selectElement = document.getElementById(`status-select-${orderId}`);
-    const updatedStatus = selectElement.value;
+    const selectElement = document.getElementById('status-select-' + orderId);
+    const newStatus = selectElement.value;
 
     fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: updatedStatus })
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
-        loadAdminOrders();
+        if (data.success) {
+            alert('Berhasil! Status pesanan diupdate menjadi: ' + newStatus);
+            loadAdminOrders(); 
+        } else {
+            alert('Gagal mengupdate pesanan: ' + data.message);
+        }
     })
     .catch(err => {
-        console.error("Gagal merubah status pesanan:", err);
-        alert("Gagal memperbarui status transaksi.");
+        console.error('Error updating order:', err);
+        alert('Terjadi kesalahan saat menghubungi server.');
     });
 }
 
@@ -201,7 +202,7 @@ function loadAdminProducts() {
                         <button class="btn-icon text-blue" onclick="openEditModal(${product.id})">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-icon text-red" onclick="deleteProduct(${product.id}, '${product.name}')">
+                        <button class="btn-icon text-red" onclick="deleteProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -219,11 +220,9 @@ function loadAdminProducts() {
 // 5. MEMBUKA MODAL EDIT & COCOKKAN DATA
 // ==========================================
 function openEditModal(productId) {
-    // Cari data produk di dalam array allProducts berdasarkan ID-nya
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
 
-    // Isi formulir modal dengan data asli dari database
     document.getElementById('edit_id').value = product.id;
     document.getElementById('edit_name').value = product.name;
     document.getElementById('edit_category').value = product.category || '';
@@ -231,18 +230,14 @@ function openEditModal(productId) {
     document.getElementById('edit_stock').value = product.stock;
     document.getElementById('edit_description').value = product.description || '';
 
-    // -------------------------------------------------------------------------
-    // SISIPAN BARU: Logika Reset Input & Preview Foto (Tidak merusak kode asli)
-    // -------------------------------------------------------------------------
     const imageInput = document.getElementById('edit_image');
-    if (imageInput) imageInput.value = ''; // Reset input file berkas lama
+    if (imageInput) imageInput.value = ''; 
 
     const previewImg = document.getElementById('edit_image_preview');
     const previewContainer = document.getElementById('edit_image_preview_container');
     
     if (previewImg && previewContainer) {
         if (product.image) {
-            // Cek apakah path berupa URL penuh atau file lokal dari folder uploads
             previewImg.src = product.image.startsWith('http') || product.image.startsWith('/') 
                 ? product.image 
                 : '/static/uploads/' + product.image;
@@ -251,9 +246,7 @@ function openEditModal(productId) {
             previewContainer.style.display = 'none';
         }
     }
-    // -------------------------------------------------------------------------
 
-    // Tampilkan modal ke layar
     document.getElementById('editModal').classList.remove('hidden');
 }
 
@@ -261,9 +254,7 @@ function closeEditModal() {
     document.getElementById('editModal').classList.add('hidden');
 }
 
-// -------------------------------------------------------------------------
-// SISIPAN BARU: Jalankan Fungsi Live Preview Saat Admin Mengganti File Foto
-// -------------------------------------------------------------------------
+// Fungsi Live Preview Saat Admin Mengganti File Foto
 document.addEventListener('DOMContentLoaded', () => {
     const editImageInput = document.getElementById('edit_image');
     if (editImageInput) {
@@ -286,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 6. MENYIMPAN PERUBAHAN EDIT KE DATABASE (API CALL)
+// 6. MENYIMPAN PERUBAHAN EDIT KE DATABASE
 // ==========================================
 function saveProductEdit() {
     const id = document.getElementById('edit_id').value;
@@ -301,7 +292,6 @@ function saveProductEdit() {
         return;
     }
 
-    // 1. Bungkus data ke dalam FormData (Mendukung Teks + File)
     let formData = new FormData();
     formData.append('name', name);
     formData.append('category', category);
@@ -309,23 +299,21 @@ function saveProductEdit() {
     formData.append('stock', stock);
     formData.append('description', description);
 
-    // 2. Cek dan masukkan file gambar JIKA admin memilih foto baru
     const imageInput = document.getElementById('edit_image');
     if (imageInput.files.length > 0) {
         formData.append('image', imageInput.files[0]);
     }
 
-    // 3. Mengirim data perubahan menggunakan FormData
     fetch(`/api/products/${id}`, {
-        method: 'POST', // Ganti menjadi POST agar sejalan dengan update Python kita
-        body: formData  // Kirim formData secara langsung (TIDAK PERLU headers JSON)
+        method: 'POST',
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             alert(data.message);
-            closeEditModal();      // Tutup modal edit
-            loadAdminProducts();   // Segarkan isi tabel katalog admin
+            closeEditModal();      
+            loadAdminProducts();   
         } else {
             alert("Gagal memperbarui produk: " + data.message);
         }
@@ -359,21 +347,11 @@ function deleteProduct(productId, productName) {
 }
 
 // ==========================================
-// 8. LOGIKA PENANGANAN FORM TAMBAH PRODUK & INIT
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    loadAdminStats();
-    loadAdminOrders();
-    loadAdminProducts();
-});
-
-// ==========================================
-// FUNGSI ADMIN: HAPUS PESANAN
+// 8. FUNGSI ADMIN: HAPUS PESANAN
 // ==========================================
 function deleteOrder(orderId) {
-    // Tampilkan popup konfirmasi sebelum menghapus beneran
     if (!confirm('Apakah Anda yakin ingin menghapus pesanan #' + orderId + ' secara permanen? Data tidak bisa dikembalikan.')) {
-        return; // Batalkan jika admin klik 'Cancel'
+        return; 
     }
 
     fetch(`/api/admin/orders/${orderId}`, {
@@ -383,7 +361,8 @@ function deleteOrder(orderId) {
     .then(data => {
         if (data.success) {
             alert('Pesanan berhasil dihapus!');
-            loadAdminOrders(); // Refresh daftar pesanan agar yang dihapus menghilang dari layar
+            loadAdminOrders(); 
+            loadAdminStats(); // Segarkan data statistik 
         } else {
             alert('Gagal menghapus pesanan: ' + data.message);
         }
@@ -395,12 +374,11 @@ function deleteOrder(orderId) {
 }
 
 // ==========================================
-// FUNGSI ADMIN: KONFIRMASI PEMBAYARAN
+// 9. FUNGSI ADMIN: KONFIRMASI PEMBAYARAN
 // ==========================================
 function confirmPayment(orderId) {
-    // Tampilkan popup konfirmasi sebelum mengubah
     if (!confirm('Apakah Anda yakin sudah mengecek rekening dan ingin mengubah status pembayaran pesanan #' + orderId + ' menjadi Lunas?')) {
-        return; // Batalkan jika admin klik 'Cancel'
+        return; 
     }
 
     fetch(`/api/admin/orders/${orderId}/payment-confirm`, {
@@ -410,7 +388,8 @@ function confirmPayment(orderId) {
     .then(data => {
         if (data.success) {
             alert('Sukses! Pembayaran divalidasi menjadi Lunas.');
-            loadAdminOrders(); // Refresh daftar pesanan otomatis
+            loadAdminOrders(); 
+            loadAdminStats(); // Segarkan data statistik agar pendapatan bertambah
         } else {
             alert('Gagal mengonfirmasi pembayaran: ' + data.message);
         }
@@ -422,33 +401,10 @@ function confirmPayment(orderId) {
 }
 
 // ==========================================
-// FUNGSI ADMIN: UPDATE STATUS PENGIRIMAN
+// INIT / JALANKAN SAAT HALAMAN DIMUAT
 // ==========================================
-function updateOrderStatus(orderId) {
-    // 1. Ambil nilai status terbaru dari dropdown
-    const selectElement = document.getElementById('status-select-' + orderId);
-    const newStatus = selectElement.value;
-
-    // 2. Kirim data ke API backend Python
-    fetch(`/api/admin/orders/${orderId}/status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: newStatus })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Jika sukses, munculkan alert dan perbarui daftar pesanan
-            alert('Berhasil! Status pesanan diupdate menjadi: ' + newStatus);
-            loadAdminOrders(); 
-        } else {
-            alert('Gagal mengupdate pesanan: ' + data.message);
-        }
-    })
-    .catch(err => {
-        console.error('Error updating order:', err);
-        alert('Terjadi kesalahan saat menghubungi server.');
-    });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    loadAdminStats();
+    loadAdminOrders();
+    loadAdminProducts();
+});
