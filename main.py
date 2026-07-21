@@ -4,7 +4,6 @@ import uuid
 import pymysql
 from flask import Flask, render_template, request, jsonify, redirect, session
 from werkzeug.utils import secure_filename
-import mysql.connector
 
 # 1. Inisialisasi Aplikasi Flask & Kunci Sesi
 app = Flask(__name__)
@@ -151,7 +150,6 @@ def api_login():
 def add_to_cart():
     try:
         # 1. Pastikan user sudah login
-        # (Pastikan kata kunci 'user' ini sama persis dengan yang kamu buat di rute /login)
         if 'user' not in session:
             return jsonify({"success": False, "message": "Silakan login terlebih dahulu untuk berbelanja!"}), 401
 
@@ -214,11 +212,11 @@ def remove_from_cart(index):
         return jsonify({"success": True, "message": "Barang dihapus"})
     return jsonify({"success": False, "message": "Gagal menghapus"})
     
-# API Hapus Produk berdasarkan ID (Tambahkan di main.py)
+# API Hapus Produk berdasarkan ID
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def api_delete_product(product_id):
     try:
-        # (Opsional) Validasi keamanan: Pastikan hanya admin yang bisa menghapus
+        # Validasi keamanan: Pastikan hanya admin yang bisa menghapus
         if 'user' not in session or session['user'].get('role') != 'admin':
             return jsonify({"success": False, "message": "Akses ditolak! Anda bukan Admin."}), 403
 
@@ -255,8 +253,8 @@ def api_admin_stats():
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            # Hitung total pendapatan dari pesanan yang status pembayarannya 'Lunas'
-            cursor.execute("SELECT SUM(total_price) as total_revenue FROM orders WHERE payment_status = 'Lunas'")
+            # PERBAIKAN: Ubah total_price menjadi total_amount (sesuai database)
+            cursor.execute("SELECT SUM(total_amount) as total_revenue FROM orders WHERE payment_status = 'Lunas'")
             res_rev = cursor.fetchone()
             total_revenue = res_rev['total_revenue'] if res_rev['total_revenue'] else 0
             
@@ -268,6 +266,7 @@ def api_admin_stats():
         conn.close()
         return jsonify({"success": True, "total_revenue": total_revenue, "total_orders": total_orders})
     except Exception as e:
+        print("Error Stats:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
 # 2. API untuk Mengambil Semua Antrean Pesanan
@@ -408,17 +407,16 @@ def api_add_product():
 # ==========================================
 #       API UNTUK MENGEDIT/UPDATE PRODUK
 # ==========================================
-@app.route('/api/products/<int:product_id>', methods=['POST', 'PUT']) # Tambah POST agar bisa baca FormData
+@app.route('/api/products/<int:product_id>', methods=['POST', 'PUT']) 
 def api_update_product(product_id):
-    import uuid # Di-import di sini untuk membuat nama gambar unik
+    import uuid 
 
     # Validasi hak akses Admin
     if 'user' not in session or session['user'].get('role') != 'admin':
         return jsonify({"success": False, "message": "Akses ditolak!"}), 403
         
     try:
-        # 1. GANTI KE request.form KARENA SEKARANG MENGIRIM GAMBAR (FormData)
-        # Kita pakai ".get" agar tidak error jika fieldnya kosong
+        # 1. AMBIL DATA FORM DATA
         name = request.form.get('name') or (request.json and request.json.get('name'))
         category = request.form.get('category') or (request.json and request.json.get('category'))
         price = request.form.get('price') or (request.json and request.json.get('price'))
@@ -494,11 +492,9 @@ def get_my_orders():
             real_user_id = user_data['id']
             
             # 3. Ambil HANYA pesanan milik user_id ini (diurutkan dari yang terbaru)
-            # Menggunakan kolom 'date' atau 'id' untuk mengurutkan (DESC)
             cursor.execute("SELECT * FROM orders WHERE user_id = %s ORDER BY id DESC", (real_user_id,))
             orders = cursor.fetchall()
             
-            # (Opsional) Jika kolom 'date' kamu berbentuk datetime, ubah ke string agar bisa dibaca JSON
             for order in orders:
                 if 'date' in order and order['date']:
                     order['date'] = order['date'].strftime('%d %b %Y %H:%M')
@@ -602,14 +598,13 @@ def process_checkout():
             cursor.execute("SELECT id FROM users WHERE username = %s", (username_dari_sesi,))
             user_data = cursor.fetchone()
             
-            # Jika usernya entah kenapa tidak ada di database
             if not user_data:
                 conn.close()
                 return jsonify({"success": False, "message": "Data user tidak ditemukan di database!"}), 400
                 
-            real_user_id = user_data['id'] # Nah, ini baru berisi angka (misal: 1, 2, atau 3)
+            real_user_id = user_data['id']
 
-            # 2. SIMPAN KE TABEL ORDERS MENGGUNAKAN real_user_id (ANGKA)
+            # 2. SIMPAN KE TABEL ORDERS MENGGUNAKAN real_user_id
             sql = """INSERT INTO orders 
                      (user_id, items, total_amount, address, status, payment_method, payment_status, payment_proof) 
                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
