@@ -388,3 +388,35 @@ function deleteOrder(orderId) {
         alert('Terjadi kesalahan pada sistem saat mencoba menghapus.');
     });
 }
+
+// ==========================================
+// FUNGSI ADMIN: UPDATE STATUS PENGIRIMAN
+// ==========================================
+function updateOrderStatus(orderId) {
+    // 1. Ambil nilai status terbaru dari dropdown
+    const selectElement = document.getElementById('status-select-' + orderId);
+    const newStatus = selectElement.value;
+
+    // 2. Kirim data ke API backend Python
+    fetch(`/api/admin/orders/${orderId}/status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Jika sukses, munculkan alert dan perbarui daftar pesanan
+            alert('Berhasil! Status pesanan diupdate menjadi: ' + newStatus);
+            loadAdminOrders(); 
+        } else {
+            alert('Gagal mengupdate pesanan: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error updating order:', err);
+        alert('Terjadi kesalahan saat menghubungi server.');
+    });
+}
