@@ -415,14 +415,24 @@ body {
         border-radius: 8px !important;
     }
 
-    .nav-link, .nav-greeting {
+    /* Perbaikan susunan menu agar tombol dan ikon tidak berantakan */
+    .nav-links {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important; /* Memastikan semua baris rata tengah */
+        gap: 10px 15px !important;
+    }
+
+    .nav-link, .nav-greeting, .nav-links a {
         font-size: 0.85rem !important;
         margin: 0 !important;
-        display: flex !important;
-        align-items: center !important; /* Menyejajarkan icon dan teks di tengah vertikal */
-        padding: 5px 8px !important; /* Memberikan bantalan yang sama rata */
-        gap: 5px !important; /* Memberi jarak rapi antara icon dan tulisan */
-        height: 100% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 6px 10px !important;
+        gap: 5px !important;
+        height: auto !important; /* Ganti 100% jadi auto agar tidak memanjang aneh */
     }
 
     /* --- 3. JUDUL HALAMAN (SELAMAT DATANG) --- */
