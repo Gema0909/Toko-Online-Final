@@ -51,55 +51,85 @@ function loadAdminOrders() {
                     console.error("Gagal membaca daftar produk:", e);
                 }
 
+                // TAMPILAN PRODUK LEBIH RAPI (Pakai Flexbox & Garis Bawah Putus-putus)
                 let itemsHtml = '';
                 if (parsedItems && parsedItems.length > 0) {
                     parsedItems.forEach(item => {
-                        itemsHtml += `<div style="margin-bottom: 4px;">- ${item.name || 'Produk'} <span style="color: #888;">(${item.qty || 1}x)</span></div>`;
+                        itemsHtml += `
+                            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.95rem;">
+                                <span style="color: #e2e8f0;">- ${item.name || 'Produk'}</span> 
+                                <span style="color: #94a3b8;">${item.qty || 1}x</span>
+                            </div>`;
                     });
                 } else {
-                    itemsHtml = 'Detail barang tidak tersedia';
+                    itemsHtml = '<p style="color: #94a3b8; font-style: italic; margin: 0;">Detail barang tidak tersedia</p>';
                 }
 
-                // 3. TAMBAHKAN LINK BUKTI PEMBAYARAN UNTUK ADMIN
+                // 3. TAMPILAN LINK BUKTI PEMBAYARAN SEPERTI TOMBOL KECIL
                 let proofHtml = '';
                 if (order.payment_proof) {
-                    proofHtml = `<p><b>Bukti Pembayaran:</b> <a href="${order.payment_proof}" target="_blank" style="color: #3b82f6; text-decoration: underline;"><i class="fas fa-image"></i> Cek Bukti Transfer</a></p>`;
+                    proofHtml = `
+                        <div style="display: flex; align-items: center; margin-top: 8px;">
+                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Bukti Pembayaran</span>
+                            <a href="${order.payment_proof}" target="_blank" style="color: #3b82f6; text-decoration: none; background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; border: 1px solid rgba(59, 130, 246, 0.3); transition: 0.3s;">
+                                <i class="fas fa-image"></i> Lihat Resi
+                            </a>
+                        </div>`;
                 }
 
                 const orderItem = document.createElement('div');
                 orderItem.className = 'order-item';
+                
+                // 4. STRUKTUR HTML KESELURUHAN (Desain Baru dengan Tombol Hapus)
                 orderItem.innerHTML = `
-                    <div class="order-header">
+                    <!-- BAGIAN HEADER (Judul & Tombol) -->
+                    <div class="order-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;">
                         <div>
-                            <!-- PERBAIKAN BACA TANGGAL (Ubah ke order.date) -->
-                            <p class="order-id">Pesanan #${order.id} (User ID: ${order.user_id})</p>
-                            <p class="order-date">${order.date || 'Tanggal tidak tersedia'}</p>
+                            <h4 style="margin: 0; color: #38bdf8; font-size: 1.15rem;">Pesanan #${order.id} <span style="font-size: 0.85rem; color: #64748b; font-weight: normal;">(User ID: ${order.user_id})</span></h4>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #94a3b8;"><i class="far fa-clock"></i> ${order.date || 'Tanggal tidak tersedia'}</p>
                         </div>
-                        <div class="status-form" style="display: flex; gap: 5px; align-items: center;">
-                            <select class="status-select" id="status-select-${order.id}">
+                        <div class="status-form" style="display: flex; gap: 8px; align-items: center;">
+                            <select class="status-select" id="status-select-${order.id}" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; cursor: pointer; outline: none;">
                                 <option value="Pending" ${sPending}>Pending</option>
                                 <option value="Diproses" ${sDiproses}>Diproses</option>
                                 <option value="Dikirim" ${sDikirim}>Dikirim</option>
                                 <option value="Selesai" ${sSelesai}>Selesai</option>
                             </select>
-                            <button type="button" class="btn-sm btn-blue" onclick="updateOrderStatus(${order.id})">Update</button>
-                            <!-- INI TOMBOL HAPUS BARUNYA -->
-                            <button type="button" class="btn-sm" style="background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;" onclick="deleteOrder(${order.id})">Hapus</button>
+                            <button type="button" class="btn-sm" style="background-color: #3b82f6; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;" onclick="updateOrderStatus(${order.id})">Update</button>
+                            <button type="button" class="btn-sm" style="background-color: #ef4444; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;" onclick="deleteOrder(${order.id})">Hapus</button>
                         </div>
                     </div>
                     
-                    <div class="order-products" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin: 10px 0;">
-                        <b style="color: #10b981;">Daftar Barang Dibeli:</b><br>
+                    <!-- BAGIAN DAFTAR PRODUK (Kotak dengan background gelap) -->
+                    <div class="order-products" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="color: #10b981; font-weight: 600; margin-top: 0; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fas fa-box-open" style="margin-right: 5px;"></i> Daftar Barang Dibeli
+                        </p>
                         ${itemsHtml}
                     </div>
                     
-                    <div class="order-details">
-                        <p><b>Alamat:</b> ${order.address || '-'}</p>
-                        <p><b>Metode:</b> ${order.payment_method || '-'}</p>
-                        <p><b>Status Pembayaran:</b> <span class="${paymentStatusClass}">${order.payment_status}</span></p>
+                    <!-- BAGIAN DETAIL ALAMAT & PEMBAYARAN (Format Grid/Tabel) -->
+                    <div class="order-details-grid" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Alamat Kirim</span>
+                            <span style="color: #f8fafc; flex-grow: 1; line-height: 1.4;">${order.address || '-'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Metode Pembayaran</span>
+                            <span style="color: #f8fafc;">${order.payment_method || '-'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="color: #94a3b8; width: 150px; flex-shrink: 0;">Status Pembayaran</span>
+                            <span class="${paymentStatusClass}" style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">${order.payment_status}</span>
+                        </div>
                         ${proofHtml}
                     </div>
-                    <p class="order-total">Total: Rp ${formatTotal}</p>
+
+                    <!-- BAGIAN TOTAL (Garis atas pembatas) -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; align-items: center;">
+                        <span style="color: #94a3b8; margin-right: 15px;">Total Tagihan:</span>
+                        <span style="color: #10b981; font-size: 1.3rem; font-weight: bold;">Rp ${formatTotal}</span>
+                    </div>
                 `;
                 orderListContainer.appendChild(orderItem);
             });
