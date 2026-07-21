@@ -80,7 +80,7 @@ function loadAdminOrders() {
                 const orderItem = document.createElement('div');
                 orderItem.className = 'order-item';
                 
-                // 4. STRUKTUR HTML KESELURUHAN (Desain Baru dengan Jarak Lebar)
+                // 4. STRUKTUR HTML KESELURUHAN (Ditambah tombol Verifikasi Lunas)
                 orderItem.innerHTML = `
                     <!-- BAGIAN HEADER -->
                     <div class="order-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;">
@@ -120,8 +120,13 @@ function loadAdminOrders() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span style="color: #94a3b8; min-width: 170px; flex-shrink: 0;">Status Pembayaran</span>
-                            <div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
                                 <span class="${paymentStatusClass}" style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">${order.payment_status}</span>
+                                
+                                <!-- TOMBOL BARU: Hanya muncul jika statusnya 'Pending' (dan bukan 'Lunas') -->
+                                ${order.payment_status && order.payment_status.toLowerCase() !== 'lunas' ? `
+                                <button type="button" class="btn-sm" style="background-color: #10b981; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 500;" onclick="confirmPayment(${order.id})">Verifikasi Lunas</button>
+                                ` : ''}
                             </div>
                         </div>
                         ${proofHtml}
@@ -386,6 +391,33 @@ function deleteOrder(orderId) {
     .catch(err => {
         console.error('Error:', err);
         alert('Terjadi kesalahan pada sistem saat mencoba menghapus.');
+    });
+}
+
+// ==========================================
+// FUNGSI ADMIN: KONFIRMASI PEMBAYARAN
+// ==========================================
+function confirmPayment(orderId) {
+    // Tampilkan popup konfirmasi sebelum mengubah
+    if (!confirm('Apakah Anda yakin sudah mengecek rekening dan ingin mengubah status pembayaran pesanan #' + orderId + ' menjadi Lunas?')) {
+        return; // Batalkan jika admin klik 'Cancel'
+    }
+
+    fetch(`/api/admin/orders/${orderId}/payment-confirm`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Sukses! Pembayaran divalidasi menjadi Lunas.');
+            loadAdminOrders(); // Refresh daftar pesanan otomatis
+        } else {
+            alert('Gagal mengonfirmasi pembayaran: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan pada sistem saat mencoba mengonfirmasi pembayaran.');
     });
 }
 
