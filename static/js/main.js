@@ -254,3 +254,18 @@ function aturNavigasiOtomatis() {
         }
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const greetingEl = document.getElementById("user-greeting");
+    
+    // Jika elemen ditemukan di halaman tersebut
+    if (greetingEl) {
+        fetch('/api/current_user')
+            .then(response => response.json())
+            .then(data => {
+                // Ubah teksnya menjadi Hi, (Nama User)
+                greetingEl.innerHTML = `<i class="fas fa-user"></i> Hi, ${data.username}`;
+            })
+            .catch(error => console.error("Gagal mengambil data user:", error));
+    }
+});

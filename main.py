@@ -195,6 +195,12 @@ def get_current_user():
     
     # Jika belum login, kasih tahu false
     return jsonify({"logged_in": False})
+
+@app.route('/api/current_user')
+def current_user():
+    if 'user' in session: 
+        return jsonify({"username": session['user']['username']})
+    return jsonify({"username": "Pelanggan"})
     
 # API Tambahan untuk mengambil data keranjang
 @app.route('/api/get_cart', methods=['GET'])
