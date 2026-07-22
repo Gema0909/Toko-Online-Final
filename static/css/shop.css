@@ -470,20 +470,36 @@
     transform: translateY(-10px);
 }
 
-/* Animasi untuk Kartu Produk Baru (Pop-In Berurutan) */
-@keyframes cardPopIn {
-    0% {
+/* =========================================
+   ANIMASI KARTU PRODUK (KONSISTEN DENGAN LOGIN)
+   ========================================= */
+
+@keyframes fadeInUpProduct {
+    from {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: translateY(20px); /* Jarak sama persis dengan halaman login */
     }
-    100% {
+    to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
+/* Timpa class .product-card sebelumnya dengan ini */
 .product-card {
-    animation: cardPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    /* Gunakan animasi yang baru dengan durasi 0.6s ease-out */
+    animation: fadeInUpProduct 0.6s ease-out both;
+    
+    /* Efek hover dan bayangan bawaan tetap dipertahankan */
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+/* Efek melayang saat kursor diarahkan ke kartu produk (tetap ada) */
+.product-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3) !important;
+    cursor: pointer;
 }
 
 /* Tampilan Loading Spinner Muter yang Elegan */
