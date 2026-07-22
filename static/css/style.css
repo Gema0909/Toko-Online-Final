@@ -493,21 +493,21 @@ body {
     animation: fadeInPage 0.4s ease-out forwards;
 }
 
-/* 2. Efek Mantul (Bounce) untuk Kotak Form Login */
+/* 2. Efek Mantul Halus (Subtle Bounce) untuk Kotak Form Login */
 @keyframes bounceUp {
     0% {
         opacity: 0;
-        transform: translateY(80px); 
+        transform: translateY(50px); /* Mulainya gak usah terlalu dari bawah (awalnya 80px) */
     }
-    50% {
+    60% {
         opacity: 1;
-        transform: translateY(-25px); 
+        transform: translateY(-10px); /* Kebablasannya dikit aja (awalnya -25px) */
     }
-    75% {
-        transform: translateY(10px); 
+    80% {
+        transform: translateY(4px); /* Pantulan baliknya juga dikecilin */
     }
     100% {
-        transform: translateY(0); 
+        transform: translateY(0); /* Berhenti mulus di tengah */
     }
 }
 
