@@ -137,3 +137,18 @@ document.addEventListener("DOMContentLoaded", function() {
     })
     .catch(err => console.error("Error:", err));
 });
+
+/* ==========================================
+   FITUR PERTAHANKAN TEKS PENCARIAN
+   ========================================== */
+document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cariQuery = urlParams.get('cari');
+    
+    if (cariQuery) {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = cariQuery;
+        }
+    }
+});

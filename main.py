@@ -29,10 +29,39 @@ def get_db_connection():
 def home_page():
     return render_template('index.html')
 
-# Ini rute untuk halaman shop.html kamu yang lama
 @app.route('/produk')
 def produk_page():
-    return render_template('shop.html')
+    # 1. Tangkap kata kunci pencarian dari URL
+    kata_kunci = request.args.get('cari')
+    
+    # 2. Buka koneksi ke MySQL 
+    # (Gunakan fungsi koneksi pymysql yang sudah kamu set di file main.py)
+    connection = get_db_connection() # <-- Ganti dengan variabel/fungsi koneksi kamu
+    
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            if kata_kunci:
+                # 3a. Jika pengunjung mengetik pencarian, cari di kolom name, category, atau description
+                query = """
+                    SELECT * FROM products 
+                    WHERE name LIKE %s 
+                       OR category LIKE %s 
+                       OR description LIKE %s
+                """
+                keyword = f"%{kata_kunci}%"
+                cursor.execute(query, (keyword, keyword, keyword))
+            else:
+                # 3b. Jika tidak ada pencarian, tampilkan semua produk
+                query = "SELECT * FROM products"
+                cursor.execute(query)
+                
+            data_produk = cursor.fetchall()
+            
+    finally:
+        connection.close() # Tutup koneksi agar server tetap kencang
+        
+    # 4. Kirim data_produk ke shop.html
+    return render_template('shop.html', produk=data_produk, kata_kunci=kata_kunci)
 
 # Halaman Login
 @app.route('/login')

@@ -341,3 +341,52 @@
 .btn-add-cart i {
     font-size: 1.2rem;
 }
+
+/* =========================================
+   PERBAIKAN TAMPILAN KOTAK PENCARIAN (SEARCH BAR)
+   ========================================= */
+.search-container {
+    max-width: 600px;
+    margin: 0 auto 2.5rem auto; /* Rata tengah dan kasih jarak ke katalog */
+    padding: 0 10px;
+    width: 100%;
+}
+
+.search-wrapper {
+    display: flex !important;
+    flex-direction: row !important; /* Paksa berjajar ke samping */
+    gap: 10px !important;
+    width: 100% !important;
+}
+
+/* Styling Kotak Ketik Pencarian */
+.search-input {
+    flex: 1 !important; /* Paksa memenuhi sisa ruang */
+    background-color: var(--bg-card, #1f2937) !important;
+    color: var(--text-main, #ffffff) !important;
+    padding: 12px 18px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border-color, #374151) !important;
+    font-size: 0.95rem !important;
+    outline: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.search-input:focus {
+    border-color: var(--primary, #3b82f6) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Styling Tombol Cari */
+.search-btn {
+    width: auto !important; /* Cabut aturan memanjang 100% */
+    white-space: nowrap !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer;
+}

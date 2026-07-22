@@ -383,68 +383,98 @@ body {
 }
 
 /* ==========================================
-   PERBAIKAN TAMPILAN MOBILE (HP) - VERSI FINAL
+   PERBAIKAN TAMPILAN MOBILE (HP) - PASTI MUNCUL
    ========================================== */
 @media (max-width: 768px) {
     
-    /* --- 1. NAVBAR & LOGO --- */
+    /* 1. Wadah Utama Navbar */
     .nav-container {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        padding: 15px 10px !important;
+        padding: 12px 10px !important;
         width: 100% !important;
     }
 
     .brand {
-        font-size: 1.5rem !important;
-        white-space: nowrap !important; /* Paksa logo 1 baris */
+        font-size: 1.4rem !important;
         margin-bottom: 12px !important;
-        display: block !important;
+        white-space: nowrap !important;
     }
 
-    /* --- 2. SUSUNAN MENU (HOME, PRODUK, TENTANG, DLL) --- */
+    /* 2. Pembungkus Semua Link & Tombol Navigasi */
     .nav-links {
         display: flex !important;
-        flex-direction: row !important; /* Paksa berjajar ke samping */
-        flex-wrap: nowrap !important; /* Dilarang numpuk ke bawah */
-        justify-content: flex-start !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important; /* MENGATUR AGAR BISA TURUN BARIS JIKA TIDAK MUAT */
+        justify-content: center !important;
         align-items: center !important;
-        gap: 20px !important;
+        gap: 8px 12px !important; /* Jarak antar menu */
         width: 100% !important;
-        padding: 5px 0 15px 0 !important; /* Ruang bernapas */
-        background-color: transparent !important; /* Buang kotak abu-abu yang bikin buntet */
-        
-        /* Fitur ajaib biar bisa digeser (scroll) pakai jari di HP */
-        overflow-x: auto !important; 
-        -webkit-overflow-scrolling: touch; /* Biar scrollnya mulus di iPhone */
-    }
-
-    /* Sembunyikan garis scrollbar biar terlihat elegan & bersih */
-    .nav-links::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-link, .nav-greeting, .nav-links a {
-        font-size: 0.9rem !important;
+        background: transparent !important;
+        padding: 0 !important;
         margin: 0 !important;
+    }
+
+    /* 3. Atur Semua Teks Link di Navbar */
+    .nav-links .nav-link, 
+    .nav-links a, 
+    .nav-links .nav-greeting {
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+        padding: 4px 6px !important;
+        white-space: nowrap !important;
+    }
+
+    /* 4. KUNCI PERBAIKAN TOMBOL LOGIN & DAFTAR */
+    /* Menetralkan aturan width: 100% dari CSS desktop agar tombol tidak merusak baris */
+    .nav-links .btn-primary, 
+    .nav-links .btn-green, 
+    .nav-links button,
+    .nav-links .btn {
+        width: auto !important; /* Bikin ukuran tombol sesuai teksnya saja */
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 5px !important;
-        white-space: nowrap !important; /* Cegah teks terpotong ke bawah */
+        padding: 6px 14px !important;
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
     }
 
-    /* --- 3. JUDUL HALAMAN (SELAMAT DATANG) --- */
+    /* 5. Judul Banner Utama */
     h1, .hero h1, .catalog-banner h1 {
-        font-size: 1.6rem !important; /* Perkecil ukuran font */
-        line-height: 1.4 !important;
-        margin-bottom: 10px !important;
-        padding: 0 10px !important;
+        font-size: 1.5rem !important;
+        line-height: 1.3 !important;
+        text-align: center !important;
     }
 
-    .hero p, .catalog-banner p {
-        font-size: 0.9rem !important;
-        padding: 0 10px !important;
+    /* 6. Perbaikan Gambar Produk Biar Nggak Raksasa */
+    .product-grid img, 
+    .product-card img,
+    .product-card .img-wrapper {
+        height: 180px !important; /* Batasi tinggi maksimal gambar */
+        width: 100% !important;
+        object-fit: cover !important; /* Biar gambar nggak gepeng walau dipotong */
+    }
+
+    /* 7. Perbaikan Tabel Keranjang Belanja */
+    /* Mencegah teks seperti "SUBTOTAL" dan "AKSI" tergencet jadi satu */
+    th, td {
+        padding: 10px 15px !important; /* Kasih ruang bernapas ekstra di kiri-kanan */
+        white-space: nowrap !important; /* Dilarang keras teksnya numpuk atau dempet */
+    }
+
+    /* Memaksa tabel punya lebar minimal agar rapi */
+    table {
+        min-width: 450px !important;
+    }
+
+    /* Memastikan area tabel bisa di-scroll ke samping pakai jari jika kepanjangan */
+    /* Asumsi: tabelmu dibungkus dalam div (biasanya div otomatis punya sifat ini jika diset) */
+    div:has(> table) {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 15px !important;
     }
 }

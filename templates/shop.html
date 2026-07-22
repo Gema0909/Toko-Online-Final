@@ -37,6 +37,18 @@
             <p class="banner-subtitle">Temukan barang impianmu dengan harga terbaik di sini!</p>
         </div>
 
+        <!-- ========================================== -->
+        <!-- FITUR PENCARIAN (TANPA JINJA) -->
+        <!-- ========================================== -->
+        <div class="search-container">
+            <form action="/produk" method="GET" class="search-form" id="searchForm">
+                <div class="search-wrapper">
+                    <input type="text" name="cari" id="searchInput" placeholder="Cari nama, kategori..." class="search-input">
+                    <button type="submit" class="btn-primary search-btn"><i class="fas fa-search"></i> Cari</button>
+                </div>
+            </form>
+        </div>
+
         <div id="tempat-produk" class="product-grid">
             <p class="loading-text">Sedang memuat produk dari database...</p>
         </div>
@@ -49,5 +61,6 @@
 
     <script src="/static/js/main.js"></script>
     <script src="/static/js/shop.js"></script>
+    
 </body>
 </html>
