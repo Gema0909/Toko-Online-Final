@@ -483,7 +483,7 @@ body {
    ANIMASI HALAMAN LOGIN (FADE IN + MANTUL)
    ========================================= */
 
-/* 1. Efek Fade-in untuk background halaman (Tetap dipertahankan) */
+/* 1. Efek Fade-in untuk background halaman */
 @keyframes fadeInPage {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -493,7 +493,7 @@ body {
     animation: fadeInPage 0.4s ease-out forwards;
 }
 
-/* 2. Efek Mantul (Bounce) untuk Kotak Form Login (Menimpa yang lama) */
+/* 2. Efek Mantul (Bounce) untuk Kotak Form Login */
 @keyframes bounceUp {
     0% {
         opacity: 0;
@@ -511,8 +511,18 @@ body {
     }
 }
 
-/* Terapkan ke kotak login */
-.login-box, .login-container, .auth-card, .form-wrapper {
+/* KUNCI: Sekarang targetnya sudah disesuaikan jadi .login-card */
+.login-card {
     animation: bounceUp 0.8s ease-in-out forwards;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Biar ada bayangannya */
+    /* Tambahan efek bayangan biar makin kece */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3) !important; 
+}
+
+/* 3. Efek Interaktif Tombol Masuk Akun (Berasa dipencet) */
+.btn-primary {
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-primary:active {
+    transform: scale(0.95) !important; /* Tombol mengecil dikit pas diklik */
 }
