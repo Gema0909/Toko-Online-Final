@@ -104,24 +104,34 @@ def admin_page():
         
     return render_template('admin.html')
 
-
 # ==========================================
 #          ROUTE API SISTEM (JSON)
 # ==========================================
-
-# API Ambil Data Produk dari Database (Dipanggil oleh shop.js)
-@app.route('/api/products')
+@app.route('/api/products', methods=['GET'])
 def api_products():
+    kata_kunci = request.args.get('cari') # Tangkap dari JavaScript
+    
+    connection = get_db_connection() # Sesuaikan fungsi koneksimu
     try:
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM products")
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            if kata_kunci:
+                # Jika ada pencarian
+                query = """
+                    SELECT * FROM products 
+                    WHERE name LIKE %s 
+                       OR category LIKE %s 
+                       OR description LIKE %s
+                """
+                keyword = f"%{kata_kunci}%"
+                cursor.execute(query, (keyword, keyword, keyword))
+            else:
+                # Jika tidak ada pencarian (halaman awal)
+                cursor.execute("SELECT * FROM products")
+                
             products = cursor.fetchall()
-        conn.close()
-        return jsonify(products)
-    except Exception as e:
-        print("Error get products:", e)
-        return jsonify([])
+            return jsonify(products) # Kirim balik ke JavaScript dalam format JSON
+    finally:
+        connection.close()
 
 # API Login dengan Deteksi Peran/Role (Admin vs User)
 @app.route('/api/login', methods=['POST'])
