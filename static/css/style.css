@@ -480,10 +480,10 @@ body {
 }
 
 /* =========================================
-   ANIMASI HALUS HALAMAN LOGIN
+   ANIMASI HALAMAN LOGIN (FADE IN + MANTUL)
    ========================================= */
 
-/* 1. Efek Fade-in untuk seluruh halaman biar transisi pindah page gak kaku */
+/* 1. Efek Fade-in untuk background halaman (Tetap dipertahankan) */
 @keyframes fadeInPage {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -493,21 +493,26 @@ body {
     animation: fadeInPage 0.4s ease-out forwards;
 }
 
-/* 2. Efek Pop-in dan meluncur dari bawah untuk Kotak Form Login */
-@keyframes formPopIn {
+/* 2. Efek Mantul (Bounce) untuk Kotak Form Login (Menimpa yang lama) */
+@keyframes bounceUp {
     0% {
         opacity: 0;
-        transform: translateY(30px) scale(0.95);
+        transform: translateY(80px); 
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-25px); 
+    }
+    75% {
+        transform: translateY(10px); 
     }
     100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0); 
     }
 }
 
-/* CATATAN: Ganti .login-box dengan nama class kotak form login kamu */
-.login-box, .auth-container, .form-wrapper {
-    animation: formPopIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    /* Tambahan efek bayangan biar kotak loginnya makin elegan */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+/* Terapkan ke kotak login */
+.login-box, .login-container, .auth-card, .form-wrapper {
+    animation: bounceUp 0.8s ease-in-out forwards;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Biar ada bayangannya */
 }
