@@ -1,57 +1,94 @@
 document.addEventListener("DOMContentLoaded", function() {
     const tempatProduk = document.getElementById('tempat-produk');
+    const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
 
-    // 1. Tangkap kata kunci pencarian dari URL (misal: ?cari=asus)
+    // 1. Tangkap kata kunci dari URL saat pertama kali buka halaman
     const urlParams = new URLSearchParams(window.location.search);
-    const cariQuery = urlParams.get('cari');
+    const initialQuery = urlParams.get('cari') || '';
 
-    // 2. Pertahankan teks di kotak input jika ada pencarian
-    if (cariQuery && searchInput) {
-        searchInput.value = cariQuery;
+    if (initialQuery && searchInput) {
+        searchInput.value = initialQuery;
     }
 
-    // 3. Susun URL API (kirim parameter ?cari=... ke backend jika user mencari)
-    let apiUrl = '/api/products';
-    if (cariQuery) {
-        apiUrl += `?cari=${encodeURIComponent(cariQuery)}`;
+    // Load produk pertama kali
+    fetchProductsWithAnimation(initialQuery);
+
+    // 2. INTERCEPT FORM SUBMIT (Biar gak reload halaman kaku)
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Hentikan reload bawaan browser!
+            const query = searchInput.value.trim();
+
+            // Ubah URL di address bar browser secara halus tanpa reload
+            const newUrl = query ? `/produk?cari=${encodeURIComponent(query)}` : '/produk';
+            window.history.pushState({ path: newUrl }, '', newUrl);
+
+            // Jalankan pencarian animasi
+            fetchProductsWithAnimation(query);
+        });
     }
 
-    // 4. Mengambil data produk dari database via API
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(products => {
-            tempatProduk.innerHTML = ''; // Hapus teks loading
+    // 3. FUNGSI UTAMA FETCH PRODUK + ANIMASI MULUS
+    async function fetchProductsWithAnimation(query = '') {
+        if (!tempatProduk) return;
 
-            // Jika produk kosong / tidak ditemukan
+        // TAHAP 1: Animasi Fade-Out data lama
+        tempatProduk.classList.add('fade-out');
+
+        // Tunggu transisi fade-out selesai (250ms)
+        await new Promise(resolve => setTimeout(resolve, 250));
+
+        // TAHAP 2: Tampilkan Spinner Muter saat panggil API
+        tempatProduk.classList.remove('fade-out');
+        tempatProduk.innerHTML = `
+            <div class="search-loading-state">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p style="font-size: 1.05rem;">Mencari barang impianmu...</p>
+            </div>
+        `;
+
+        let apiUrl = '/api/products';
+        if (query) {
+            apiUrl += `?cari=${encodeURIComponent(query)}`;
+        }
+
+        try {
+            const response = await fetch(apiUrl);
+            const products = await response.json();
+
+            tempatProduk.innerHTML = ''; // Clear spinner
+
+            // Jika hasil pencarian kosong
             if (!products || products.length === 0) {
-                if (cariQuery) {
-                    tempatProduk.innerHTML = `<p style="text-align:center; color:#9ca3af; grid-column: 1 / -1;">Tidak ditemukan produk dengan kata kunci "<strong>${cariQuery}</strong>".</p>`;
-                } else {
-                    tempatProduk.innerHTML = '<p style="text-align:center; color:#9ca3af; grid-column: 1 / -1;">Belum ada produk di database.</p>';
-                }
+                tempatProduk.innerHTML = `
+                    <div class="search-empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3 style="color:#ffffff; margin-bottom: 5px;">Produk Tidak Ditemukan</h3>
+                        <p>Tidak ada barang dengan kata kunci "<strong>${query}</strong>". Coba kata kunci lain!</p>
+                    </div>
+                `;
                 return;
             }
 
-            // Merender HTML menggunakan JavaScript murni
-            products.forEach(item => {
-                
-                // Logika Gambar
+            // TAHAP 3: Render produk dengan animasi Pop-In Berurutan (Staggered)
+            products.forEach((item, index) => {
                 let imageSrc = 'https://placehold.co/400x300/e0e0e0/666666?text=No+Image';
                 if (item.image) {
                     if (item.image.startsWith('http') || item.image.startsWith('/')) {
-                        imageSrc = item.image; 
+                        imageSrc = item.image;
                     } else {
-                        imageSrc = '/static/uploads/' + item.image; 
+                        imageSrc = '/static/uploads/' + item.image;
                     }
                 }
 
-                // Logika Deskripsi
                 const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
 
-                // Template Kartu HTML
+                // Efek delay berurutan biar kartu muncul satu per satu (0.08s, 0.16s, dst)
+                const animationDelay = (index * 0.08).toFixed(2);
+
                 const productCard = `
-                    <div class="product-card" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                    <div class="product-card" style="animation-delay: ${animationDelay}s; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                         
                         <img 
                             src="${imageSrc}" 
@@ -61,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         >
                         
                         <div style="padding: 0 15px 15px 15px; display: flex; flex-direction: column; flex-grow: 1;">
-                            
                             <div>
                                 <h3 style="margin: 0 0 5px 0; font-size: 1.15rem; color: #ffffff;">${item.name}</h3>
                                 <p class="category-tag" style="margin: 0 0 10px 0; font-size: 0.85rem; color: #60a5fa;">
@@ -85,19 +121,19 @@ document.addEventListener("DOMContentLoaded", function() {
                                     <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
                                 </button>
                             </div>
-                            
                         </div>
                     </div>
                 `;
                 tempatProduk.innerHTML += productCard;
             });
-        })
-        .catch(err => {
+
+        } catch (err) {
             tempatProduk.innerHTML = '<p style="text-align:center; color:#f87171; grid-column: 1 / -1;">Gagal memuat produk. Periksa koneksi ke database.</p>';
             console.error("Error fetching products:", err);
-        });
+        }
+    }
 
-    // 5. Mengambil Data User untuk Greeting Navbar
+    // 4. Mengambil Data User untuk Greeting Navbar
     fetch('/api/user')
         .then(response => response.json())
         .then(data => {

@@ -455,3 +455,54 @@
 .search-input {
     transition: all 0.3s ease !important;
 }
+
+/* ========================================================
+   ANIMASI PENCARIAN REAL-TIME & SMOOTH DI TOMBOL CARI SHOP
+   ======================================================== */
+
+/* Transisi saat data lama menghilang */
+.product-grid {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.product-grid.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Animasi untuk Kartu Produk Baru (Pop-In Berurutan) */
+@keyframes cardPopIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.product-card {
+    animation: cardPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Tampilan Loading Spinner Muter yang Elegan */
+.search-loading-state, .search-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9ca3af;
+    animation: cardPopIn 0.3s ease;
+}
+
+.search-loading-state i {
+    font-size: 2.5rem;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+.search-empty-state i {
+    font-size: 3rem;
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
