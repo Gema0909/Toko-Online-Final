@@ -493,36 +493,29 @@ body {
     animation: fadeInPage 0.4s ease-out forwards;
 }
 
-/* 2. Efek Mantul Halus (Subtle Bounce) untuk Kotak Form Login */
-@keyframes bounceUp {
-    0% {
+/* Efek yang sama persis dengan kartu produk di halaman utama */
+@keyframes fadeInUpLogin {
+    from {
         opacity: 0;
-        transform: translateY(50px); /* Mulainya gak usah terlalu dari bawah (awalnya 80px) */
+        transform: translateY(20px); /* Mulai dari bawah sedikit aja */
     }
-    60% {
+    to {
         opacity: 1;
-        transform: translateY(-10px); /* Kebablasannya dikit aja (awalnya -25px) */
-    }
-    80% {
-        transform: translateY(4px); /* Pantulan baliknya juga dikecilin */
-    }
-    100% {
-        transform: translateY(0); /* Berhenti mulus di tengah */
+        transform: translateY(0); /* Berhenti mulus di posisi asli */
     }
 }
 
-/* KUNCI: Sekarang targetnya sudah disesuaikan jadi .login-card */
 .login-card {
-    animation: bounceUp 0.8s ease-in-out forwards;
-    /* Tambahan efek bayangan biar makin kece */
+    /* Menggunakan timing ease-out 0.6 detik persis seperti di halaman produk */
+    animation: fadeInUpLogin 0.6s ease-out forwards;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3) !important; 
 }
 
-/* 3. Efek Interaktif Tombol Masuk Akun (Berasa dipencet) */
+/* Efek Interaktif Tombol Masuk Akun (Tetap dipertahankan) */
 .btn-primary {
     transition: all 0.2s ease-in-out !important;
 }
 
 .btn-primary:active {
-    transform: scale(0.95) !important; /* Tombol mengecil dikit pas diklik */
+    transform: scale(0.95) !important;
 }
