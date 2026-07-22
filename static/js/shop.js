@@ -1,22 +1,42 @@
 document.addEventListener("DOMContentLoaded", function() {
     const tempatProduk = document.getElementById('tempat-produk');
-    const cartBadge = document.querySelector('.cart-badge');
+    const searchInput = document.getElementById('searchInput');
 
-    // Mengambil data produk dari database via API
-    fetch('/api/products')
+    // 1. Tangkap kata kunci pencarian dari URL (misal: ?cari=asus)
+    const urlParams = new URLSearchParams(window.location.search);
+    const cariQuery = urlParams.get('cari');
+
+    // 2. Pertahankan teks di kotak input jika ada pencarian
+    if (cariQuery && searchInput) {
+        searchInput.value = cariQuery;
+    }
+
+    // 3. Susun URL API (kirim parameter ?cari=... ke backend jika user mencari)
+    let apiUrl = '/api/products';
+    if (cariQuery) {
+        apiUrl += `?cari=${encodeURIComponent(cariQuery)}`;
+    }
+
+    // 4. Mengambil data produk dari database via API
+    fetch(apiUrl)
         .then(response => response.json())
         .then(products => {
             tempatProduk.innerHTML = ''; // Hapus teks loading
-            
-            if(products.length === 0) {
-                tempatProduk.innerHTML = '<p>Belum ada produk di database.</p>';
+
+            // Jika produk kosong / tidak ditemukan
+            if (!products || products.length === 0) {
+                if (cariQuery) {
+                    tempatProduk.innerHTML = `<p style="text-align:center; color:#9ca3af; grid-column: 1 / -1;">Tidak ditemukan produk dengan kata kunci "<strong>${cariQuery}</strong>".</p>`;
+                } else {
+                    tempatProduk.innerHTML = '<p style="text-align:center; color:#9ca3af; grid-column: 1 / -1;">Belum ada produk di database.</p>';
+                }
                 return;
             }
 
             // Merender HTML menggunakan JavaScript murni
             products.forEach(item => {
                 
-                // 1. Logika Gambar
+                // Logika Gambar
                 let imageSrc = 'https://placehold.co/400x300/e0e0e0/666666?text=No+Image';
                 if (item.image) {
                     if (item.image.startsWith('http') || item.image.startsWith('/')) {
@@ -26,10 +46,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
 
-                // 2. Logika Deskripsi
+                // Logika Deskripsi
                 const descText = item.description ? item.description : "Tidak ada deskripsi untuk produk ini.";
 
-                // 3. Template Kartu HTML (Teks Diberi Jarak / Padding)
+                // Template Kartu HTML
                 const productCard = `
                     <div class="product-card" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                         
@@ -73,35 +93,46 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         })
         .catch(err => {
-            // Jika ada error jaringan/database, tampilkan pesan ini
-            tempatProduk.innerHTML = '<p style="text-align:center; color:#f87171;">Gagal memuat produk. Periksa koneksi ke database.</p>';
+            tempatProduk.innerHTML = '<p style="text-align:center; color:#f87171; grid-column: 1 / -1;">Gagal memuat produk. Periksa koneksi ke database.</p>';
             console.error("Error fetching products:", err);
         });
+
+    // 5. Mengambil Data User untuk Greeting Navbar
+    fetch('/api/user')
+        .then(response => response.json())
+        .then(data => {
+            if(data.logged_in) {
+                let namaTampil = data.username;
+                if (typeof data.username === 'object' && data.username !== null) {
+                    namaTampil = data.username.username || data.username.name || "User";
+                }
+                const elemGreeting = document.getElementById("user-greeting") || document.getElementById("nama-user");
+                if (elemGreeting) {
+                    elemGreeting.innerHTML = `<i class="fas fa-user-circle"></i> Hi, ${namaTampil}`;
+                }
+            }
+        })
+        .catch(err => console.error("Error fetching user data:", err));
 });
 
-// Fungsi untuk menambah ke keranjang via API
-function addToCart(productId, productName, productPrice) { // 1. Tambah parameter di sini
+// Fungsi Tambah ke Keranjang via API
+function addToCart(productId, productName, productPrice) {
     const formData = new FormData();
-    formData.append('id', productId);       // 2. Ubah 'product_id' jadi 'id'
-    formData.append('name', productName);   // 3. Tambah baris ini
-    formData.append('price', productPrice); // 4. Tambah baris ini
+    formData.append('id', productId);
+    formData.append('name', productName);
+    formData.append('price', productPrice);
 
-    fetch('/api/cart', {                    // 5. Ubah '/api/cart/add' jadi '/api/cart'
+    fetch('/api/cart', {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
-        // --- BAGIAN BAWAH INI SAMA PERSIS, TIDAK ADA YANG DIHAPUS ---
-        if(data.status === 'success' || data.success) { // Tambah '|| data.success' untuk jaga-jaga
+        if(data.status === 'success' || data.success) {
             alert(data.message);
             
-            // Update angka keranjang secara langsung
             const badge = document.querySelector('.cart-badge');
             if (badge) {
-                // 👇 PENYESUAIAN AMAN:
-                // Jika backend mengirim data jumlah keranjang, kita pakai itu.
-                // Jika tidak mengirim (seperti di main.py kamu), kita tambah 1 angka secara manual di layar.
                 if (data.cart_count !== undefined) {
                     badge.innerText = data.cart_count;
                 } else {
@@ -119,36 +150,3 @@ function addToCart(productId, productName, productPrice) { // 1. Tambah paramete
         alert("Gagal menambahkan ke keranjang.");
     });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    fetch('/api/user')
-    .then(response => response.json())
-    .then(data => {
-        if(data.logged_in) {
-            let namaTampil = data.username;
-            
-            // 💡 JIKA data.username berbentuk paket/object, kita bongkar isinya
-            if (typeof data.username === 'object' && data.username !== null) {
-                namaTampil = data.username.username || data.username.name || "User";
-            }
-            
-            document.getElementById("nama-user").innerText = "Hi, " + namaTampil;
-        }
-    })
-    .catch(err => console.error("Error:", err));
-});
-
-/* ==========================================
-   FITUR PERTAHANKAN TEKS PENCARIAN
-   ========================================== */
-document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cariQuery = urlParams.get('cari');
-    
-    if (cariQuery) {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.value = cariQuery;
-        }
-    }
-});
