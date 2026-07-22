@@ -346,9 +346,9 @@
    PERBAIKAN TAMPILAN PENCARIAN (PRESISI TINGGI)
    ========================================= */
 .search-container {
-    max-width: 700px; /* Agak dilebarin dikit biar pas sama proporsi grid */
-    margin: 0 auto 2.5rem auto; 
-    padding: 0 15px;
+    max-width: 400px; /* Lebarnya dikurangin dikit biar manis */
+    margin: 0 0 2rem 0; /* KUNCI: Rata kiri (auto-nya dihapus) */
+    padding: 0;
     width: 100%;
 }
 
