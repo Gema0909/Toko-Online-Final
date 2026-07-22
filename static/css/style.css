@@ -478,3 +478,36 @@ body {
         margin-bottom: 15px !important;
     }
 }
+
+/* =========================================
+   ANIMASI HALUS HALAMAN LOGIN
+   ========================================= */
+
+/* 1. Efek Fade-in untuk seluruh halaman biar transisi pindah page gak kaku */
+@keyframes fadeInPage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    animation: fadeInPage 0.4s ease-out forwards;
+}
+
+/* 2. Efek Pop-in dan meluncur dari bawah untuk Kotak Form Login */
+@keyframes formPopIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* CATATAN: Ganti .login-box dengan nama class kotak form login kamu */
+.login-box, .auth-container, .form-wrapper {
+    animation: formPopIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* Tambahan efek bayangan biar kotak loginnya makin elegan */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
