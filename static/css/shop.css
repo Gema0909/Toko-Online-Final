@@ -343,32 +343,36 @@
 }
 
 /* =========================================
-   PERBAIKAN TAMPILAN KOTAK PENCARIAN (SEARCH BAR)
+   PERBAIKAN TAMPILAN PENCARIAN (PRESISI TINGGI)
    ========================================= */
 .search-container {
-    max-width: 600px;
-    margin: 0 auto 2.5rem auto; /* Rata tengah dan kasih jarak ke katalog */
-    padding: 0 10px;
+    max-width: 700px; /* Agak dilebarin dikit biar pas sama proporsi grid */
+    margin: 0 auto 2.5rem auto; 
+    padding: 0 15px;
     width: 100%;
 }
 
 .search-wrapper {
     display: flex !important;
-    flex-direction: row !important; /* Paksa berjajar ke samping */
+    flex-direction: row !important;
+    align-items: stretch !important; /* Memaksa anak-anaknya punya tinggi yang sama */
+    justify-content: center !important;
     gap: 10px !important;
     width: 100% !important;
 }
 
-/* Styling Kotak Ketik Pencarian */
+/* Styling Kotak Ketik */
 .search-input {
-    flex: 1 !important; /* Paksa memenuhi sisa ruang */
+    flex: 1 !important;
     background-color: var(--bg-card, #1f2937) !important;
     color: var(--text-main, #ffffff) !important;
-    padding: 12px 18px !important;
+    padding: 0 20px !important; /* Atur spasi kiri-kanan aja */
     border-radius: 8px !important;
     border: 1px solid var(--border-color, #374151) !important;
     font-size: 0.95rem !important;
     outline: none !important;
+    height: 48px !important; /* KUNCI: Paksa tingginya presisi */
+    box-sizing: border-box !important;
     transition: all 0.2s ease-in-out !important;
 }
 
@@ -379,14 +383,17 @@
 
 /* Styling Tombol Cari */
 .search-btn {
-    width: auto !important; /* Cabut aturan memanjang 100% */
-    white-space: nowrap !important;
-    padding: 12px 24px !important;
+    width: auto !important;
+    padding: 0 24px !important; /* Atur spasi kiri-kanan aja */
     border-radius: 8px !important;
     margin: 0 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
+    font-weight: 600 !important;
+    height: 48px !important; /* KUNCI: Samakan dengan tinggi kotak ketik */
+    border: none !important;
+    box-sizing: border-box !important;
     cursor: pointer;
 }
