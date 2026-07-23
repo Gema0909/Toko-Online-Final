@@ -21,53 +21,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // =========================================================================
-    // 2. LOGIKA KIRIM DATA LOGIN KE API BACKEND PYTHON (RIIL)
+    // 2. LOGIKA KIRIM DATA LOGIN (SUDAH DIBERSIHKAN)
     // =========================================================================
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Menahan agar halaman tidak reload saat tombol ditekan
-            
-            // Mengambil input username dan password langsung dari form HTML
-            const formData = new FormData(loginForm);
-
-            // Mengirim data form ke API backend /api/login
-            fetch('/api/login', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Koneksi ke server gagal.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Jika respon backend sukses (berhasil memverifikasi akun di database)
-                if (data.success) {
-                    alert(data.message || "Login berhasil!");
-                    
-                    // Ambil peran (role) dari user yang dikembalikan oleh database
-                    const userRole = (data.user && data.user.role) ? data.user.role : 'user';
-
-                    // Pengalihan halaman dinamis berdasarkan role
-                    if (userRole === 'admin') {
-                        window.location.href = '/admin'; // Diarahkan ke Dashboard Admin
-                    } else {
-                        window.location.href = '/produk'; // Diarahkan ke Katalog Belanja User
-                    }
-                    
-                } else {
-                    // Jika login gagal karena username/password salah
-                    alert(data.message || "Username atau password salah!");
-                }
-            })
-            .catch(err => {
-                console.error("Gagal melakukan login:", err);
-                alert("Terjadi kesalahan sistem atau server backend Anda offline.");
-            });
-        });
-    }
+    // Kode e.preventDefault() dan Fetch API sudah dihapus dari sini.
+    // Sekarang form akan langsung mengirim data POST ke backend Python secara natural!
 
     // =========================================================================
     // 3. PENGHAPUS NOTIFIKASI / ALERT OTOMATIS (5 DETIK)
