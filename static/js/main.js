@@ -177,18 +177,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-
-    // D. Simulasi form submit Login (Sesuai id="loginForm" di login.html Anda)
-    document.getElementById('loginForm')?.addEventListener('submit', function(e) {
-        // e.preventDefault();  // <--- Dinonaktifkan agar form bisa submit beneran
-        // alert("Tombol login ditekan! (Versi HTML Statis)"); // <--- Dinonaktifkan
-    });
-
-    // E. Simulasi submit form Register
-    document.getElementById('registerForm')?.addEventListener('submit', function(e) {
-        // e.preventDefault();  // <--- Dinonaktifkan agar form bisa submit beneran
-        // alert("Proses pendaftaran akun baru berhasil! (Simulasi HTML Statis)"); // <--- Dinonaktifkan
-    });
 });
 
 // Fungsi untuk menghitung dan menampilkan jumlah barang di keranjang belanja
