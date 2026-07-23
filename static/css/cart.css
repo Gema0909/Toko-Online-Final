@@ -269,3 +269,30 @@
 .dark-file-input::file-selector-button:hover {
     background-color: #4a5568;
 }
+
+/* =========================================
+   ANIMASI HALAMAN KERANJANG (FADE IN UP)
+   ========================================= */
+
+@keyframes fadeInUpCart {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pastikan class .cart-item ini sesuai dengan yang ada di HTML/JS kamu */
+.cart-item, .cart-container {
+    animation: fadeInUpCart 0.6s ease-out both;
+}
+
+/* Efek muncul berurutan (Staggered) */
+.cart-item:nth-child(1) { animation-delay: 0.1s; }
+.cart-item:nth-child(2) { animation-delay: 0.2s; }
+.cart-item:nth-child(3) { animation-delay: 0.3s; }
+.cart-item:nth-child(4) { animation-delay: 0.4s; }
+.cart-item:nth-child(5) { animation-delay: 0.5s; }
