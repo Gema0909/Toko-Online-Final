@@ -63,81 +63,70 @@ def produk_page():
     # 4. Kirim data_produk ke shop.html
     return render_template('shop.html', produk=data_produk, kata_kunci=kata_kunci)
 
-
 # ==========================================
 #          PERBAIKAN ROUTE LOGIN & REGISTER
 # ==========================================
-
 # Halaman Login
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     if request.method == 'POST':
-        # Ambil data dari form HTML
         username = request.form.get('username')
         password = request.form.get('password')
         
         try:
             conn = get_db_connection()
             with conn.cursor() as cursor:
-                # Cek apakah username dan password cocok di database
                 cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
                 user = cursor.fetchone()
             conn.close()
             
             if user:
-                # Jika cocok, buat sesi login
                 user_role = user.get('role', 'user')
                 if username.lower() == 'admin':
                     user_role = 'admin'
 
                 session['user'] = {"username": user['username'], "role": user_role}
-                session['cart'] = [] # Reset keranjang
+                session['cart'] = [] 
                 
-                # Arahkan sesuai role
                 if user_role == 'admin':
                     return redirect('/admin')
                 else:
                     return redirect('/produk')
             else:
-                return "<h1>Username atau password salah!</h1><p>Silakan kembali dan coba lagi.</p>", 401
+                # MENGIRIM PESAN ERROR KE HTML JIKA GAGAL
+                return render_template('login.html', error="Username atau password salah!")
                 
         except Exception as e:
-            return f"Terjadi kesalahan server: {str(e)}", 500
+            return render_template('login.html', error=f"Terjadi kesalahan server: {str(e)}")
 
-    # Jika method GET (cuma mau buka halaman)
     return render_template('login.html')
 
 # Halaman Register
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
     if request.method == 'POST':
-        # Ambil data dari form HTML
         username = request.form.get('username')
         password = request.form.get('password')
         
         try:
             conn = get_db_connection()
             with conn.cursor() as cursor:
-                # 1. Cek dulu apakah username sudah ada yang pakai
                 cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
                 if cursor.fetchone():
                     conn.close()
-                    return "<h1>Username sudah dipakai!</h1><p>Silakan kembali ke halaman sebelumnya dan pilih nama lain.</p>", 400
+                    # MENGIRIM PESAN ERROR JIKA USERNAME SUDAH TERPAKAI
+                    return render_template('register.html', error="Username sudah dipakai! Silakan pilih nama lain.")
                     
-                # 2. Simpan user baru ke database
                 cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)", (username, password, 'user'))
                 conn.commit()
             conn.close()
             
-            # Jika berhasil, lempar ke halaman login
             return redirect('/login') 
             
         except Exception as e:
-            return f"Terjadi kesalahan saat mendaftar: {str(e)}", 500
+            return render_template('register.html', error=f"Terjadi kesalahan saat mendaftar: {str(e)}")
 
-    # Jika method GET (cuma mau buka halaman)
     return render_template('register.html')
-
 
 @app.route('/logout')
 def logout():
